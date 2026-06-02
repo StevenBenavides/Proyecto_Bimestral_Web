@@ -1,0 +1,139 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.54cm}
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{graphicx} % Necesario para insertar las imágenes
+\usepackage{float}    % Necesario para forzar la posición de las imágenes con [H]
+
+\title{Análisis Reto: GIRO \\ Sistema de Gestión de Inventario y Pedidos}
+\author{Hansell Steven Benavides Jumbo}
+\date{\today}
+
+\begin{document}
+	
+	\maketitle
+	\tableofcontents
+	\newpage
+	
+	\chapter{Capítulo 1: Introducción y Problemática}
+	
+	\section{Introducción}
+	El presente documento tiene como propósito definir la visión general del Sistema de Gestión de Inventario y Rutas de Pedido, denominado GIRO. Este sistema se establece en el contexto de la distribución mayorista, abarcando la atención de micromercados en zonas tanto rurales como urbanas del Ecuador. Su objetivo principal es reducir la pérdida de ventas, mejorar el control de inventario en tiempo real y potenciar la productividad de los vendedores en ruta.
+	
+	\section{Problemática}
+	La problemática central radica en la desconexión entre el inventario real disponible en bodega y la información que manejan los vendedores en campo al momento de tomar pedidos en micromercados. 
+	Los vendedores trabajan con catálogos desactualizados o con datos de stock del día anterior, lo que genera pedidos sobre productos agotados, compromisos de entrega que no se pueden cumplir y ventas perdidas. Esto impacta negativamente a los vendedores, jefes de ventas, bodega, propietarios de negocios y a la gerencia general de la distribuidora.
+	
+	\section{Metodología o estrategia de desarrollo}
+	La estrategia de desarrollo se apoya en iteraciones ágiles, validación continua con stakeholders y la ejecución de \textit{sprints} de refinamiento junto al equipo de desarrollo. Se incorporan también prácticas de análisis de negocio basadas en estándares del BABOK.
+	
+	A nivel de arquitectura técnica, el proyecto utilizará \textbf{MariaDB} como motor de base de datos relacional. Se seleccionó MariaDB por su alta escalabilidad, rendimiento en la nube y la facilidad de implementación con el equipo actual. Para el desarrollo del backend, se empleará el framework \textbf{Django} (Python), el cual nos permitirá desarrollar de forma rápida, estructurada y segura la API REST que servirá los datos tanto a la aplicación web (PWA) de los vendedores como al panel de bodega.
+	
+	\chapter{Capítulo 2: Planificación y análisis}
+	
+	\section{Análisis}
+	El análisis revela que una solución exitosa permitirá la consulta de stock en tiempo real, el registro digital de pedidos en campo mediante una aplicación web, la aplicación de incentivos dinámicos y la visibilidad gerencial mediante paneles centralizados. El enfoque se centra en vendedores en ruta (usuarios principales) y supervisores.
+	
+	\section{Requisitos funcionales}
+	A continuación, se listan los requisitos funcionales principales extraídos del análisis:
+	\begin{itemize}
+		\item \textbf{RF-01:} El sistema debe mostrar al vendedor un catálogo de productos con el nombre, código SKU, descripción, precio unitario y nivel de stock actualizado.
+		\item \textbf{RF-02:} El sistema debe permitir al vendedor seleccionar un cliente de su ruta e iniciar un nuevo pedido.
+		\item \textbf{RF-03:} El sistema debe operar en modo offline almacenando localmente el catálogo y los pedidos generados, sincronizando automáticamente al recuperar la señal.
+		\item \textbf{RF-04:} Al confirmar un pedido, el sistema debe verificar que la cantidad solicitada no supere el stock disponible.
+		\item \textbf{RF-05:} El sistema debe actualizar el nivel de inventario automáticamente al confirmar el despacho de un pedido.
+		\item \textbf{RF-06:} El sistema debe mostrar al supervisor un panel con el estado de pedidos por vendedor y el cumplimiento de metas en tiempo real.
+	\end{itemize}
+	
+	\section{Requisitos no funcionales}
+	Los requisitos de calidad técnica y restricciones operativas incluyen:
+	\begin{itemize}
+		\item \textbf{RNF-01 (Rendimiento):} El catálogo debe cargar completamente en el navegador del vendedor en menos de 3 segundos con una conexión 3G estable.
+		\item \textbf{RNF-02 (Rendimiento):} La sincronización de pedidos offline debe completarse en menos de 10 segundos al recuperar la conexión.
+		\item \textbf{RNF-03 (Seguridad):} Toda comunicación debe realizarse mediante HTTPS con TLS 1.3.
+		\item \textbf{RNF-04 (Usabilidad):} El vendedor debe poder completar la toma de un pedido en un máximo de 5 pasos desde la aplicación web en su dispositivo móvil.
+		\item \textbf{RNF-05 (Disponibilidad):} Garantizar un uptime mínimo del 99.5\% mensual.
+	\end{itemize}
+	
+	\section{Historias de Usuario / Casos de Uso}
+	En esta sección se modela la interacción entre los actores del sistema GIRO y las funcionalidades principales mediante diagramas de casos de uso.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.8\textwidth]{caso_1.jpg}
+		\caption{Diagrama de Casos de Uso General}
+		\label{fig:cu_general}
+	\end{figure}
+	En la Figura \ref{fig:cu_general} se ilustra la visión global del sistema. Se identifican los tres actores principales (Vendedor en Ruta, Jefe de Bodega y Supervisor) interactuando con los módulos centrales del sistema (CU-01, CU-02 y CU-03), apoyados de fondo por el sistema general de inventario.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.8\textwidth]{caso_2.jpg}
+		\caption{Flujo Principal: Registro de pedido en campo}
+		\label{fig:cu_01_a}
+	\end{figure}
+	La Figura \ref{fig:cu_01_a} detalla el Caso de Uso 01 (Registro de pedido). Aquí se observa cómo el Vendedor de Ruta inicia el proceso con un inicio de sesión (que incluye la validación del usuario) y procede a registrar el pedido.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.8\textwidth]{caso_3.jpg}
+		\caption{Validaciones del Registro de Pedido}
+		\label{fig:cu_01_b}
+	\end{figure}
+	Como se detalla en la Figura \ref{fig:cu_01_b}, el registro del pedido tiene dependencias estrictas (\textit{includes}): requiere validar el stock en tiempo real contra el sistema de inventario y validar que el comercio pertenezca a la ruta del vendedor.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.8\textwidth]{caso_4.jpg}
+		\caption{Extensión Offline del Registro de Pedido}
+		\label{fig:cu_01_c}
+	\end{figure}
+	Finalmente, la Figura \ref{fig:cu_01_c} resalta la funcionalidad \textit{extend} del sistema: en caso de que el vendedor se encuentre en una zona rural sin cobertura, el sistema extiende su comportamiento para habilitar la sincronización offline, guardando el pedido localmente.
+	
+	\section{Sprint}
+	La estrategia de desarrollo se divide en iteraciones o \textit{Sprints} enfocados en entregar valor incremental alineado a los módulos críticos del sistema:
+	\begin{itemize}
+		\item \textbf{Sprint 1: Base, Autenticación y Catálogo.} Configuración de la base de datos, despliegue de la API, módulo de seguridad con control de acceso basado en roles (RBAC) y listado de productos en tiempo real.
+		\item \textbf{Sprint 2: Módulo Web de Campo y Sincronización.} Desarrollo de la Progressive Web App (PWA) para vendedores y lógica de toma de pedidos con almacenamiento local cifrado (AES-256) para habilitar el funcionamiento offline en zonas rurales sin cobertura.
+		\item \textbf{Sprint 3: Bodega y Supervisión.} Implementación del panel de control web en tiempo real para supervisores, gestión de metas dinámicas y la cola de despacho para el equipo de bodega.
+	\end{itemize}
+	
+	\section{Diagramas: Clases y BD (diseño lógico)}
+	A continuación, se presenta el diseño estructural del sistema, modelado en dos niveles: el diseño orientado a objetos y el diseño físico para la base de datos.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.9\textwidth]{Diagrama_Clases.jpg}
+		\caption{Diagrama de Clases (Lógica de Negocio)}
+		\label{fig:diagrama_clases}
+	\end{figure}
+	La Figura \ref{fig:diagrama_clases} muestra el diagrama de clases de UML. Este modelo define las entidades principales (Vendedor, Cliente, Pedido, Producto, etc.), sus atributos y sus métodos de operación, estableciendo las relaciones y multiplicidades lógicas (por ejemplo, la relación de uno a muchos entre un vendedor y sus pedidos).
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.9\textwidth]{Diagrama_BD.jpg}
+		\caption{Diagrama Lógico de Base de Datos para MariaDB}
+		\label{fig:diagrama_bd}
+	\end{figure}
+	La Figura \ref{fig:diagrama_bd} representa la estructura adaptada específicamente para el motor relacional \textbf{MariaDB}. En este diagrama se visualizan los tipos de datos físicos y se identifican explícitamente las Llaves Primarias (\texttt{<<PK>>}) de cada tabla, así como las Llaves Foráneas (\texttt{<<FK>>}) que garantizan la integridad referencial y el intercambio de datos entre los distintos módulos del sistema.
+	
+	\section{Diagrama de componentes}
+	El sistema se divide en tres componentes principales: la aplicación web (PWA) en los dispositivos de los vendedores, el servidor que expone la API REST, y el motor de base de datos relacional.
+	% \includegraphics[width=\textwidth]{nombre_del_diagrama_componentes.png}
+	
+	\section{Arquitectura lógica y física (propuesta)}
+	El sistema GIRO adopta una arquitectura orientada a servicios, diseñada para alta disponibilidad y el manejo de contextos con baja conectividad:
+	\begin{itemize}
+		\item \textbf{Arquitectura Lógica:} El frontend opera como una aplicación web progresiva (PWA) con capacidades \textit{offline-first}, sincronizando datos asíncronamente con el backend. Este último expone una API REST que centraliza la lógica de validación de stock y el cálculo de comisiones.
+		\item \textbf{Arquitectura Física:} Los usuarios acceden mediante navegadores web desde smartphones o computadoras de escritorio. El servidor web y la base de datos se alojan en una infraestructura en la nube que permite el escalamiento horizontal, garantizando un \textit{uptime} del 99.5\%.
+	\end{itemize}
+	
+	\section{Prototipo de pantallas no funcional}
+	Las interfaces web están diseñadas con un enfoque responsivo para adaptarse a pantallas móviles y de escritorio, cumpliendo con la restricción de diseño de botones táctiles de 44x44 píxeles para el uso en campo.
+	% \includegraphics[width=\textwidth]{nombre_de_los_mockups.png}
+	
+\end{document}
