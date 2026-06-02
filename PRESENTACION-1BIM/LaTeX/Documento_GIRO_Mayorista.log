@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.5.30)  1 JUN 2026 23:13
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.5.30)  2 JUN 2026 09:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -537,18 +537,45 @@ LaTeX Font Info:    Trying to load font information for U+lasy on input line 12
 (C:\Users\CROSSHAIR\AppData\Local\Programs\MiKTeX\tex/latex/base\ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
-Overfull \hbox (22.5725pt too wide) in paragraph at lines 132--133
-[]\OT1/cmr/bx/n/12 Arquitectura F^^S^^Psi-ca: \OT1/cmr/m/n/12 Los usua-rios ac-
-ce-den me-dian-te na-ve-ga-do-res web des-de smartpho-
- []
+<Dgm_Componentes.jpg, id=132, 609.477pt x 444.4605pt>
+File: Dgm_Componentes.jpg Graphic file (type jpg)
+<use Dgm_Componentes.jpg>
+Package pdftex.def Info: Dgm_Componentes.jpg  used on input line 129.
+(pdftex.def)             Requested size: 407.66867pt x 297.2919pt.
 
 [9
 pdfTeX warning (ext4): destination with the same identifier (name{figure.2.6}) 
 has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.133 	\end{itemize}
-                     <./Diagrama_BD.jpg>] [10] (Documento_GIRO_Mayorista.aux
+l.133 	E
+        n la Figura \ref{fig:diagrama_componentes} se ilustra la arquitectur...
+ <./Diagrama_BD.jpg>]
+Overfull \hbox (22.5725pt too wide) in paragraph at lines 139--140
+[]\OT1/cmr/bx/n/12 Arquitectura F^^S^^Psi-ca: \OT1/cmr/m/n/12 Los usua-rios ac-
+ce-den me-dian-te na-ve-ga-do-res web des-de smartpho-
+ []
+
+[10
+pdfTeX warning (ext4): destination with the same identifier (name{figure.2.7}) 
+has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.144 	
+        <./Dgm_Componentes.jpg>]
+<Wireframe_venta_Ruta.jpeg, id=146, 1606.0pt x 656.4525pt>
+File: Wireframe_venta_Ruta.jpeg Graphic file (type jpg)
+<use Wireframe_venta_Ruta.jpeg>
+Package pdftex.def Info: Wireframe_venta_Ruta.jpeg  used on input line 147.
+(pdftex.def)             Requested size: 452.96826pt x 185.14767pt.
+ [11
+pdfTeX warning (ext4): destination with the same identifier (name{figure.2.8}) 
+has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.161 \end{document}
+                     <./Wireframe_venta_Ruta.jpeg>]
+(Documento_GIRO_Mayorista.aux
 LaTeX Info: Redefining \. on input line 11.
 LaTeX Info: Redefining \% on input line 11.
 )
@@ -561,13 +588,13 @@ d.
 (rerunfilecheck)             Checksum: 0ECC27017DF7FF2A0803BA57DFD90E79;2746.
  ) 
 Here is how much of TeX's memory you used:
- 10771 strings out of 467871
- 172308 string characters out of 5416440
- 597989 words of memory out of 5000000
- 39507 multiletter control sequences out of 15000+600000
+ 10790 strings out of 467871
+ 172786 string characters out of 5416440
+ 599159 words of memory out of 5000000
+ 39523 multiletter control sequences out of 15000+600000
  633810 words of font info for 61 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,6n,79p,601b,539s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,7n,79p,891b,534s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/CROSSHAIR/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts
 /cm/cmbx12.pfb><C:/Users/CROSSHAIR/AppData/Local/Programs/MiKTeX/fonts/type1/pu
 blic/amsfonts/cm/cmr12.pfb><C:/Users/CROSSHAIR/AppData/Local/Programs/MiKTeX/fo
@@ -576,9 +603,9 @@ ms/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/CROSSHAIR/AppData
 /Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb><C:/Users/CROS
 SHAIR/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/latxfont/lasy10
 .pfb>
-Output written on Documento_GIRO_Mayorista.pdf (11 pages, 513656 bytes).
+Output written on Documento_GIRO_Mayorista.pdf (12 pages, 698655 bytes).
 PDF statistics:
- 178 PDF objects out of 1000 (max. 8388607)
- 32 named destinations out of 1000 (max. 500000)
- 143 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 188 PDF objects out of 1000 (max. 8388607)
+ 35 named destinations out of 1000 (max. 500000)
+ 153 words of extra memory for PDF output out of 10000 (max. 10000000)
 

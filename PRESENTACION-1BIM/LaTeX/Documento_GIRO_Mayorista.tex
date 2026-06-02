@@ -10,7 +10,7 @@
 \usepackage{float}    % Necesario para forzar la posición de las imágenes con [H]
 
 \title{Análisis Reto: GIRO \\ Sistema de Gestión de Inventario y Pedidos}
-\author{Hansell Steven Benavides Jumbo}
+\author{Hansell Steven Benavides Jumbo - Sergi Montaño Galarza}
 \date{\today}
 
 \begin{document}
@@ -122,8 +122,15 @@
 	La Figura \ref{fig:diagrama_bd} representa la estructura adaptada específicamente para el motor relacional \textbf{MariaDB}. En este diagrama se visualizan los tipos de datos físicos y se identifican explícitamente las Llaves Primarias (\texttt{<<PK>>}) de cada tabla, así como las Llaves Foráneas (\texttt{<<FK>>}) que garantizan la integridad referencial y el intercambio de datos entre los distintos módulos del sistema.
 	
 	\section{Diagrama de componentes}
-	El sistema se divide en tres componentes principales: la aplicación web (PWA) en los dispositivos de los vendedores, el servidor que expone la API REST, y el motor de base de datos relacional.
-	% \includegraphics[width=\textwidth]{nombre_del_diagrama_componentes.png}
+	El sistema distribuye sus funcionalidades en tres capas principales que agrupan los componentes de software, garantizando el aislamiento de responsabilidades y la escalabilidad del proyecto.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.9\textwidth]{Dgm_Componentes.jpg}
+		\caption{Diagrama de Componentes (Arquitectura en 3 Capas)}
+		\label{fig:diagrama_componentes}
+	\end{figure}
+	En la Figura \ref{fig:diagrama_componentes} se ilustra la arquitectura orientada a servicios del sistema GIRO. La \textbf{Capa de Presentación} contiene la Aplicación Web Progresiva (PWA) para los vendedores en ruta y el Panel Web de Supervisión para la gerencia. Estos componentes se comunican de forma segura (mediante HTTPS / TLS 1.3) con la \textbf{Capa de Lógica de Negocio}, donde la API REST desarrollada en Django procesa las peticiones y las reglas de negocio. Finalmente, la \textbf{Capa de Datos} garantiza la persistencia centralizada mediante el servidor MariaDB. Además, se destaca la conexión directa de la PWA con un módulo de Almacenamiento Local cifrado, el cual permite el funcionamiento ininterrumpido del sistema en modo \textit{offline} durante el trabajo de campo.
 	
 	\section{Arquitectura lógica y física (propuesta)}
 	El sistema GIRO adopta una arquitectura orientada a servicios, diseñada para alta disponibilidad y el manejo de contextos con baja conectividad:
@@ -133,7 +140,22 @@
 	\end{itemize}
 	
 	\section{Prototipo de pantallas no funcional}
-	Las interfaces web están diseñadas con un enfoque responsivo para adaptarse a pantallas móviles y de escritorio, cumpliendo con la restricción de diseño de botones táctiles de 44x44 píxeles para el uso en campo.
-	% \includegraphics[width=\textwidth]{nombre_de_los_mockups.png}
+	Las interfaces web están diseñadas con un enfoque responsivo para adaptarse a pantallas móviles, cumpliendo con la restricción de diseño de botones táctiles amplios para el uso ágil en campo. A continuación, se presenta el flujo principal para la toma de pedidos.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{Wireframe_venta_Ruta.jpeg}
+		\caption{Wireframe del Flujo de Venta en Ruta (PWA)}
+		\label{fig:wireframe_venta}
+	\end{figure}
+	
+	La Figura \ref{fig:wireframe_venta} detalla el prototipo de la secuencia de pantallas que utiliza el vendedor durante su ruta:
+	\begin{itemize}
+		\item \textbf{Dashboard (Inicio):} Presenta un resumen del rendimiento del vendedor (progreso de meta actual al 80\% y comisiones acumuladas) junto con un botón principal y accesible de ``+ Nuevo Pedido''.
+		\item \textbf{Escoger Cliente:} Una interfaz limpia equipada con una barra de búsqueda que permite filtrar y seleccionar rápidamente el micromercado a gestionar.
+		\item \textbf{Catálogo:} Despliega los productos disponibles en formato de tarjetas, indicando su SKU, precio y \textit{stock} actualizado. Incluye selectores numéricos simples de aumentar o disminuir cantidades, ideal para manipulación en pantallas táctiles, y un botón para avanzar al resumen.
+		\item \textbf{Ordenar (Resumen):} Pantalla final que muestra la consolidación de los ítems seleccionados para una revisión rápida antes de enviar el pedido a bodega o guardarlo localmente.
+	\end{itemize}
+	Cabe destacar que todas las pantallas integran de forma persistente un indicador de ``Estado de red'' en la parte inferior, el cual es una característica vital del sistema para notificar al vendedor si está operando de forma \textit{online} u \textit{offline} en zonas de baja cobertura.
 	
 \end{document}

@@ -11,5 +11,5 @@
 \contentsline {section}{\numberline {2.5}Sprint}{7}{section.2.5}%
 \contentsline {section}{\numberline {2.6}Diagramas: Clases y BD (diseño lógico)}{8}{section.2.6}%
 \contentsline {section}{\numberline {2.7}Diagrama de componentes}{9}{section.2.7}%
-\contentsline {section}{\numberline {2.8}Arquitectura lógica y física (propuesta)}{9}{section.2.8}%
-\contentsline {section}{\numberline {2.9}Prototipo de pantallas no funcional}{10}{section.2.9}%
+\contentsline {section}{\numberline {2.8}Arquitectura lógica y física (propuesta)}{10}{section.2.8}%
+\contentsline {section}{\numberline {2.9}Prototipo de pantallas no funcional}{11}{section.2.9}%
