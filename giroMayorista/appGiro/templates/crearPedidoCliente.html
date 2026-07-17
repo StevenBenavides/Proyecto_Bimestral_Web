@@ -1,0 +1,53 @@
+{% extends 'master.html' %}
+
+{% block title %}
+Nuevo Pedido | App Giro
+{% endblock %}
+
+{% block content %}
+<h2>Nuevo Pedido para: {{ cliente.nombreTienda }}</h2>
+<p><strong>Propietario:</strong> {{ cliente.propietario }}</p>
+
+<form action="" method="post">
+    {% csrf_token %}
+
+    <div class="formulario-encabezado">
+        <h3 style="margin-top: 0;">Detalles Generales del Pedido</h3>
+        {{ formulario.as_p }}
+    </div>
+
+    <hr>
+
+    <h3>Catálogo de Productos</h3>
+    <p>Selecciona la cantidad que deseas pedir de cada producto. El sistema calculará el total automáticamente.</p>
+
+    <div class="ecommerce-grid">
+        {% for p in productos %}
+        <div class="product-card">
+            <h4>{{ p.nombre }}</h4>
+            <p class="sku">SKU: {{ p.codigoSKU }}</p>
+            <p class="desc">{{ p.descripcion }}</p>
+            <p class="precio">$ {{ p.precioUnitario }} / {{ p.unidadMedida }}</p>
+
+            {% if p.stockDiponible > 0 %}
+            <p class="stock">Stock Disponible: {{ p.stockDiponible }}</p>
+            <label>Cantidad a pedir:</label>
+            <input type="number" name="producto_{{ p.id }}" min="0" max="{{ p.stockDiponible }}" value="0">
+            {% else %}
+            <p class="stock" style="color: red;">Agotado</p>
+            <input type="number" disabled value="0">
+            {% endif %}
+        </div>
+        {% empty %}
+        <p>No hay productos disponibles en el inventario.</p>
+        {% endfor %}
+    </div>
+
+    <hr>
+
+    <div style="margin-top: 30px;">
+        <button type="submit" style="font-size: 18px; padding: 15px 30px;">Generar Pedido</button>
+        <a href="{% url 'index' %}" style="margin-left: 20px; font-weight: bold;">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

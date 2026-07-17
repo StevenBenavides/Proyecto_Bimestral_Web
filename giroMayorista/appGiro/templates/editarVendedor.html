@@ -1,0 +1,17 @@
+{% extends 'master.html' %}
+
+{% block title %}
+Editar Trabajador | App Giro
+{% endblock %}
+
+{% block content %}
+<h2>Editar Trabajador</h2>
+
+<form action="" method="post">
+    {% csrf_token %}
+    {{ formulario.as_p }}
+    
+    <button type="submit">Actualizar Trabajador</button>
+    <a href="{% url 'index' %}">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,166 @@
+{% extends 'master.html' %}
+
+{% block title %}
+Dashboard | App Giro
+{% endblock %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<div class="card-container" id="reporte-dashboard">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="margin-top: 0;">Dashboard Administrativo - KPIs</h2>
+        <button id="btn-descargar-pdf" class="btn-primary" style="background-color: #34c759;">📸 Descargar Reporte (Imagen)</button>
+    </div>
+
+    <div style="background-color: #f9f9fb; padding: 25px; border-radius: 12px; margin-bottom: 30px; border: 1px solid var(--border-color); display: flex; gap: 40px;">
+        <div>
+            <p style="color: var(--text-muted); font-size: 14px; text-transform: uppercase; font-weight: 600; margin: 0 0 5px 0;">Total Pedidos</p>
+            <h3 style="margin: 0; font-size: 32px; color: var(--text-main);">{{ total_pedidos }}</h3>
+        </div>
+        <div>
+            <p style="color: var(--text-muted); font-size: 14px; text-transform: uppercase; font-weight: 600; margin: 0 0 5px 0;">Monto Total Vendido</p>
+            <h3 style="margin: 0; font-size: 32px; color: var(--primary-color);">$ {{ monto_total_vendido }}</h3>
+        </div>
+    </div>
+
+    <!-- Área de Gráficas -->
+    <div style="display: flex; gap: 30px; margin-bottom: 40px; flex-wrap: wrap;">
+        <!-- Gráfico 1 -->
+        <div style="flex: 1; min-width: 300px; padding: 20px; border: 1px solid var(--border-color); border-radius: 12px;">
+            <h3 style="margin-top: 0; font-size: 16px; color: var(--text-muted); text-transform: uppercase;">Ventas Totales por Vendedor ($)</h3>
+            <div style="position: relative; height: 250px; width: 100%;">
+                <canvas id="graficoVentas"></canvas>
+            </div>
+        </div>
+        
+        <!-- Gráfico 2 -->
+        <div style="flex: 1; min-width: 300px; padding: 20px; border: 1px solid var(--border-color); border-radius: 12px;">
+            <h3 style="margin-top: 0; font-size: 16px; color: var(--text-muted); text-transform: uppercase;">Pedidos por Ruta / Zona</h3>
+            <div style="position: relative; height: 250px; width: 100%;">
+                <canvas id="graficoRutas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <h3 style="margin-bottom: 20px;">Detalle de Rutas Más Abastecidas</h3>
+    <table style="width: 100%;">
+        <tr>
+            <th>Ruta (Zona)</th>
+            <th>Total de Clientes</th>
+            <th>Total de Pedidos Realizados</th>
+        </tr>
+        {% for zona in zonas_abastecidas %}
+        <tr>
+            <td><strong>{{ zona.rutaId }}</strong></td>
+            <td>{{ zona.total_clientes }} tiendas</td>
+            <td>{{ zona.total_pedidos_zona }} pedidos</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3" style="text-align: center; color: var(--text-muted);">No hay datos de zonas suficientes para mostrar.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div style="margin-top: 30px; margin-bottom: 30px;">
+    <a href="{% url 'index' %}" class="btn-secondary">← Volver al inicio</a>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Gráfico de Barras: Ventas por Vendedor
+    const ctxVentas = document.getElementById('graficoVentas').getContext('2d');
+    const nombresVendedores = {{ nombres_vendedores_json|safe }};
+    const ventasVendedores = {{ ventas_vendedores_json|safe }};
+    
+    new Chart(ctxVentas, {
+        type: 'bar',
+        data: {
+            labels: nombresVendedores,
+            datasets: [{
+                label: 'Monto Vendido ($)',
+                data: ventasVendedores,
+                backgroundColor: '#FB4318', // Color primario
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            devicePixelRatio: 1, // FUNDAMENTAL para que html2pdf no agrande las gráficas
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // 2. Gráfico de Pastel: Pedidos por Ruta
+    const ctxRutas = document.getElementById('graficoRutas').getContext('2d');
+    const nombresRutas = {{ nombres_rutas_json|safe }};
+    const pedidosRutas = {{ pedidos_rutas_json|safe }};
+    
+    new Chart(ctxRutas, {
+        type: 'pie',
+        data: {
+            labels: nombresRutas,
+            datasets: [{
+                data: pedidosRutas,
+                backgroundColor: [
+                    '#FFC22F', // Amarillo
+                    '#34c759', // Verde
+                    '#007aff', // Azul Apple
+                    '#ff9500', // Naranja Apple
+                    '#af52de'  // Morado
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            devicePixelRatio: 1, // FUNDAMENTAL para que html2pdf no agrande las gráficas
+            plugins: {
+                legend: { position: 'right' }
+            }
+        }
+    });
+
+    <!-- 3. Generación de Imagen (JPG) con html2canvas -->
+    document.getElementById('btn-descargar-pdf').addEventListener('click', function() {
+        const elemento = document.getElementById('reporte-dashboard');
+        const botonDescarga = this;
+        
+        // Texto de carga
+        const textoOriginal = botonDescarga.innerText;
+        botonDescarga.innerText = '📸 Capturando...';
+        botonDescarga.style.pointerEvents = 'none';
+        
+        // Forzar un estilo temporal para la captura perfecta
+        botonDescarga.style.display = 'none'; // ocultar el botón en la foto
+        
+        // html2canvas toma una "foto" exacta de lo que hay en pantalla
+        html2canvas(elemento, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
+            // Restaurar botón
+            botonDescarga.style.display = 'inline-block';
+            botonDescarga.innerText = textoOriginal;
+            botonDescarga.style.pointerEvents = 'auto';
+            
+            // Crear el enlace de descarga de la imagen
+            const enlace = document.createElement('a');
+            enlace.download = 'Reporte_Dashboard_Giro.jpg';
+            // Exportar a JPG con 90% de calidad
+            enlace.href = canvas.toDataURL('image/jpeg', 0.9);
+            enlace.click();
+        }).catch(err => {
+            console.error("Error al capturar:", err);
+            botonDescarga.style.display = 'inline-block';
+            botonDescarga.innerText = textoOriginal;
+            botonDescarga.style.pointerEvents = 'auto';
+        });
+    });
+});
+</script>
+{% endblock %}

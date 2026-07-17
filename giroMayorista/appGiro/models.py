@@ -3,13 +3,22 @@ from django.db import models
 # Create your models here.
 
 from django.db import models
+from django.contrib.auth.models import User
+
+RUTAS_CHOICES = [
+    ('Norte', 'Norte'),
+    ('Sur', 'Sur'),
+    ('Este', 'Este'),
+    ('Oeste', 'Oeste'),
+]
 
 class Vendedor(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     comisionAcumulada = models.FloatField()
     metaActual = models.FloatField()
-    rutaAsignada = models.CharField(max_length=100)
+    rutaAsignada = models.CharField(max_length=100, choices=RUTAS_CHOICES)
 
     def __str__(self):
         return "%s %s %s %s %s" % (
@@ -26,7 +35,7 @@ class Cliente(models.Model):
     direccion = models.CharField(max_length=200)
     coordenadas = models.CharField(max_length=100)
     historialPedidos = models.TextField()
-    rutaId = models.IntegerField()
+    rutaId = models.CharField(max_length=100, choices=RUTAS_CHOICES)
 
     def __str__(self):
         return "%s %s %s %s %s %s" % (
@@ -78,6 +87,12 @@ class Pedido(models.Model):
     totalMonto = models.FloatField()
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name="pedidos")
     vendedor = models.ForeignKey(Vendedor, on_delete=models.CASCADE, related_name="pedidos")
+
+    def calcular_total(self):
+        total = 0.0
+        for detalle in self.detalles.all():
+            total += detalle.subtotal
+        return total
 
     def __str__(self):
         return "%s %s %s %s %s %s %s %s" % (

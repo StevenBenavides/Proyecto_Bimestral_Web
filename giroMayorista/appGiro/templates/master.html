@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    {% load static %}
+
+    <!-- Tu CSS personalizado (se crea en la carpeta static/css/style.css) -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <title>
+        {% block title %}
+        App Giro
+        {% endblock %}
+    </title>
+</head>
+
+<body>
+
+    <!-- ***** Header Area Start ***** -->
+    <header class="header-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="main-nav">
+                        <!-- ***** Logo Start ***** -->
+                        <a href="{% url 'index' %}" class="logo">
+                            <h4>Giro<span>Mayorista</span></h4>
+                        </a>
+                        <!-- ***** Logo End ***** -->
+
+                        <!-- ***** Menu Start ***** -->
+            <ul class="nav">
+              {% if user.is_authenticated %}
+                  <li><a href="{% url 'index' %}">Panel Tiendas</a></li>
+                  {% if user.is_superuser %}
+                      <li><a href="{% url 'crear_vendedor' %}">Nuevo Trabajador</a></li>
+                      <li><a href="{% url 'crear_cliente' %}">Nueva Tienda</a></li>
+                      <li><a href="{% url 'dashboard_admin' %}" class="btn-primary">Dashboard</a></li>
+                  {% else %}
+                      <li><a href="{% url 'mis_pedidos' %}">Mis Pedidos</a></li>
+                  {% endif %}
+                  <li><a href="{% url 'logout' %}" class="btn-secondary">Salir ({{ user.username }})</a></li>
+              {% else %}
+                  <li><a href="{% url 'landing' %}">Inicio</a></li>
+                  <li><a href="{% url 'login' %}">Ingresar</a></li>
+                  <li><a href="{% url 'registro' %}" class="btn-primary">Únete</a></li>
+              {% endif %}
+            </ul>
+            <!-- ***** Menu End ***** -->
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- ***** Header Area End ***** -->
+
+    <!-- ***** Banner ***** -->
+    <div class="main-banner" id="top">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="left-content header-text">
+                        <h6>Sistema de Pedidos</h6>
+                        <h2>Abastecimiento para <em>Micromercados</em></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ***** Main Content Area ***** -->
+    <div id="services" class="our-services section">
+        <div class="container">
+            
+            <!-- Django Messages Toast -->
+            {% if messages %}
+            <div class="toast-container">
+                {% for message in messages %}
+                <div class="toast-message toast-{{ message.tags }}">
+                    {{ message }}
+                    <button class="toast-close" onclick="this.parentElement.style.display='none';">&times;</button>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <script>
+                // Auto-dismiss after 5 seconds
+                setTimeout(function() {
+                    const toasts = document.querySelectorAll('.toast-message');
+                    toasts.forEach(toast => {
+                        toast.style.opacity = '0';
+                        setTimeout(() => toast.style.display = 'none', 500);
+                    });
+                }, 5000);
+            </script>
+            {% endif %}
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <!-- Bloque dinámico para las vistas hijas -->
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <p>Proyecto Bimestral GIRO - Loja, Ecuador
+                        <br>{% now "j F Y H:i" %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

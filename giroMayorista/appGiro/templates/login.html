@@ -1,0 +1,30 @@
+{% extends 'master.html' %}
+
+{% block title %}Iniciar Sesión | App Giro{% endblock %}
+
+{% block content %}
+<div class="card-container" style="max-width: 400px; margin: 40px auto;">
+    <h2 style="text-align: center;">Iniciar Sesión</h2>
+    
+    {% if error %}
+        <p style="color: red; text-align: center;">{{ error }}</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <p>
+            <label for="username">Usuario:</label><br>
+            <input type="text" name="username" id="username" required style="width: 100%; padding: 8px; margin-top: 5px;">
+        </p>
+        <p>
+            <label for="password">Contraseña:</label><br>
+            <input type="password" name="password" id="password" required style="width: 100%; padding: 8px; margin-top: 5px;">
+        </p>
+        <button type="submit" style="width: 100%; margin-top: 15px;">Entrar</button>
+    </form>
+    
+    <p style="text-align: center; margin-top: 20px;">
+        ¿No tienes cuenta? <a href="{% url 'registro' %}">Regístrate aquí</a>
+    </p>
+</div>
+{% endblock %}

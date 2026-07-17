@@ -1,0 +1,16 @@
+{% extends 'master.html' %}
+{% load static %}
+
+{% block title %}Bienvenidos a Giro Mayorista{% endblock %}
+
+{% block content %}
+<div style="text-align: center; margin-top: 50px;">
+    <h2>Tu aliado en el abastecimiento</h2>
+    <p>Conectamos grandes proveedores con los micromercados más importantes de tu zona.</p>
+    
+    <div style="margin-top: 30px; display: flex; justify-content: center; gap: 20px;">
+        <a href="{% url 'login' %}" style="background-color: #FB4318; color: white; padding: 15px 25px; border-radius: 5px; text-decoration: none; font-weight: bold;">Ingresar al Sistema</a>
+        <a href="{% url 'registro' %}" style="background-color: #FFC22F; color: #333; padding: 15px 25px; border-radius: 5px; text-decoration: none; font-weight: bold;">Unirte como Vendedor</a>
+    </div>
+</div>
+{% endblock %}

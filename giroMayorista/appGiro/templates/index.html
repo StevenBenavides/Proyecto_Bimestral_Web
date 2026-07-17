@@ -1,0 +1,72 @@
+{% extends 'master.html' %}
+
+{% block title %}
+Listado Principal | App Giro
+{% endblock %}
+
+{% block content %}
+{% if user.is_superuser %}
+<div class="card-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="margin: 0;">Trabajadores / Vendedores (Total: {{ numero_vendedores }})</h2>
+        <a href="{% url 'crear_vendedor' %}" class="btn-primary">✚ Añadir Trabajador</a>
+    </div>
+
+    <table>
+        <tr>
+            <th>Nombre</th>
+            <th>Meta</th>
+            <th>Ruta</th>
+            <th>Opciones</th>
+        </tr>
+        {% for vendedor in vendedores %}
+        <tr>
+            <td><strong>{{ vendedor.nombre }} {{ vendedor.apellido }}</strong></td>
+            <td>{{ vendedor.metaActual }}</td>
+            <td><span class="badge badge-gray">{{ vendedor.rutaAsignada }}</span></td>
+            <td>
+                <a href="{% url 'obtener_vendedor' vendedor.id %}" class="btn-action">Ver</a>
+                <a href="{% url 'editar_vendedor' vendedor.id %}" class="btn-action">Editar</a>
+                <a href="{% url 'eliminar_vendedor' vendedor.id %}" class="btn-action" style="color: #ff3b30 !important;" onclick="return confirm('¿Seguro que deseas eliminar?');">Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" style="text-align: center; color: var(--text-muted);">No hay trabajadores registrados aún.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+<div class="card-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="margin: 0;">Tiendas / Micromercados (Total: {{ numero_clientes }})</h2>
+        <a href="{% url 'crear_cliente' %}" class="btn-primary">✚ Añadir Tienda</a>
+    </div>
+
+    <table>
+        <tr>
+            <th>Tienda</th>
+            <th>Propietario</th>
+            <th>Ruta</th>
+            <th>Opciones</th>
+        </tr>
+        {% for cliente in clientes %}
+        <tr>
+            <td><strong>{{ cliente.nombreTienda }}</strong></td>
+            <td>{{ cliente.propietario }}</td>
+            <td><span class="badge badge-gray">{{ cliente.rutaId }}</span></td>
+            <td>
+                <a href="{% url 'editar_cliente' cliente.id %}" class="btn-action">Editar</a>
+                <a href="{% url 'crear_pedido_cliente' cliente.id %}" class="btn-primary" style="margin-left: 10px;">📦 Hacer Pedido</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" style="text-align: center; color: var(--text-muted);">No hay tiendas registradas aún.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'master.html' %}
+
+{% block title %}
+Ver Trabajador | App Giro
+{% endblock %}
+
+{% block content %}
+<h2>Detalles del Trabajador / Vendedor</h2>
+
+<ul>
+    <li><strong>Nombre Completo:</strong> {{ vendedor.nombre }} {{ vendedor.apellido }}</li>
+    <li><strong>Comisión Acumulada:</strong> $ {{ vendedor.comisionAcumulada }}</li>
+    <li><strong>Meta Actual:</strong> $ {{ vendedor.metaActual }}</li>
+    <li><strong>Ruta Asignada:</strong> Ruta {{ vendedor.rutaAsignada }}</li>
+</ul>
+
+<p>
+    <a href="{% url 'editar_vendedor' vendedor.id %}">Editar</a> | 
+    <a href="{% url 'index' %}">Volver al inicio</a>
+</p>
+{% endblock %}

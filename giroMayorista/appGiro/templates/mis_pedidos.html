@@ -1,0 +1,45 @@
+{% extends 'master.html' %}
+
+{% block title %}Mis Pedidos | App Giro{% endblock %}
+
+{% block content %}
+<div class="card-container" style="max-width: 900px; margin: 0 auto;">
+    <h2>Mis Pedidos</h2>
+    <p style="color: #666; margin-bottom: 20px;">Revisa el estado de todos los pedidos que has generado.</p>
+    
+    <table class="apple-table">
+        <thead>
+            <tr>
+                <th>Nº Pedido</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Tienda</th>
+                <th>Monto Total</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pedido in pedidos %}
+            <tr>
+                <td><strong>{{ pedido.numeroPedido }}</strong></td>
+                <td>{{ pedido.fecha|date:"d M Y" }}</td>
+                <td>{{ pedido.hora|time:"H:i" }}</td>
+                <td>{{ pedido.cliente.nombreTienda }}</td>
+                <td>${{ pedido.totalMonto|floatformat:2 }}</td>
+                <td>
+                    <span class="badge {% if pedido.estado == 'Entregado' %}badge-green{% elif pedido.estado == 'Pendiente' %}badge-yellow{% else %}badge-gray{% endif %}">
+                        {{ pedido.estado }}
+                    </span>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center; color: #888; padding: 20px;">
+                    No has registrado ningún pedido aún.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
