@@ -63,9 +63,5 @@ El proyecto funciona con las siguientes tecnologías y librerías:
 - Página principal: http://127.0.0.1:8000/
 - Panel administrativo: http://127.0.0.1:8000/admin/
 
-## Notas importantes
 
-- Si el profesor desea trabajar con una base de datos nueva, debe ejecutar el comando de migraciones antes de iniciar la aplicación.
-- Si aparece un error indicando que alguna librería no está instalada, se debe repetir el paso de instalación de dependencias.
-- Para detener el servidor, basta con presionar Ctrl + C en la ventana de CMD.
 
