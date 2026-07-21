@@ -12,6 +12,19 @@ RUTAS_CHOICES = [
     ('Oeste', 'Oeste'),
 ]
 
+class Proveedor(models.Model):
+    TIPO_CHOICES = [
+        ('Mayorista', 'Mayorista'),
+        ('Minorista', 'Minorista'),
+    ]
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE)
+    nombre_empresa = models.CharField(max_length=150)
+    tipo = models.CharField(max_length=50, choices=TIPO_CHOICES)
+
+    def __str__(self):
+        return "%s (%s)" % (self.nombre_empresa, self.tipo)
+
+
 class Vendedor(models.Model):
     usuario = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     nombre = models.CharField(max_length=100)
@@ -64,6 +77,7 @@ class Producto(models.Model):
     stockMinimo = models.IntegerField()
     unidadMedida = models.CharField(max_length=50)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name="productos")
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE, related_name="productos", null=True, blank=True)
 
     def __str__(self):
         return "%s %s %s %s %s %s %s %s" % (
@@ -79,14 +93,24 @@ class Producto(models.Model):
 
 
 class Pedido(models.Model):
+    ESTADO_CHOICES = [
+        ('Pendiente', 'Pendiente'),
+        ('En proceso', 'En proceso'),
+        ('Enviado', 'Enviado'),
+        ('En ruta', 'En ruta'),
+        ('Entregado', 'Entregado'),
+    ]
+
     numeroPedido = models.CharField(max_length=50, unique=True)
-    estado = models.CharField(max_length=50)
+    estado = models.CharField(max_length=50, choices=ESTADO_CHOICES, default='Pendiente')
+    rutaAsignada = models.CharField(max_length=100, choices=RUTAS_CHOICES, null=True, blank=True)
     estaOffline = models.BooleanField(default=False)
     fecha = models.DateField()
     hora = models.TimeField()
     totalMonto = models.FloatField()
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name="pedidos")
     vendedor = models.ForeignKey(Vendedor, on_delete=models.CASCADE, related_name="pedidos")
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE, related_name="pedidos", null=True, blank=True)
 
     def calcular_total(self):
         total = 0.0
@@ -133,6 +157,7 @@ class Inventario(models.Model):
     responsableId = models.IntegerField()
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name="movimientos_inventario")
     pedido = models.ForeignKey(Pedido, on_delete=models.SET_NULL, null=True, blank=True, related_name="movimientos_inventario")
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE, related_name="movimientos_inventario", null=True, blank=True)
 
     def __str__(self):
         return "%s %s %s %s %s %s" % (

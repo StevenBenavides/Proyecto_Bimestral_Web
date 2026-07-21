@@ -57,17 +57,28 @@ class ClienteForm(ModelForm):
 
 
 class ProductoForm(ModelForm):
+    UNIDADES_CHOICES = [
+        ('Unidades', 'Unidades'),
+        ('Cajas', 'Cajas'),
+        ('Kg', 'Kilogramos'),
+        ('Libras', 'Libras'),
+        ('Litros', 'Litros'),
+        ('Docenas', 'Docenas'),
+        ('Galones', 'Galones'),
+    ]
+    
+    unidadMedida = forms.ChoiceField(choices=UNIDADES_CHOICES, label='Unidad de Medida')
+    
     class Meta:
         model = Producto
-        fields = ['codigoSKU', 'nombre', 'descripcion', 'precioUnitario', 'stockDiponible', 'stockMinimo', 'unidadMedida', 'categoria']
+        
+        fields = ['nombre', 'descripcion', 'precioUnitario', 'stockDiponible', 'stockMinimo', 'unidadMedida', 'categoria']
         labels = {
-            'codigoSKU': _('Ingrese código SKU'),
             'nombre': _('Ingrese nombre del producto'),
             'descripcion': _('Ingrese descripción'),
             'precioUnitario': _('Precio Unitario'),
             'stockDiponible': _('Stock Disponible'),
             'stockMinimo': _('Stock Mínimo'),
-            'unidadMedida': _('Unidad de Medida'),
             'categoria': _('Categoría'),
         }
         widgets ={
@@ -95,10 +106,7 @@ class PedidoForm(ModelForm):
 
 
 class PedidoClienteForm(ModelForm):
-    """
-    Este formulario se parece a NumeroTelefonicoEstudianteForm de tu ejemplo.
-    Sirve para crear un pedido asignándolo automáticamente a un cliente.
-    """
+    
     def __init__(self, cliente, vendedor, *args, **kwargs):
         super(PedidoClienteForm, self).__init__(*args, **kwargs)
         self.initial['cliente'] = cliente
@@ -120,3 +128,10 @@ class RegistroForm(forms.Form):
     nombre = forms.CharField(label='Nombre', max_length=100)
     apellido = forms.CharField(label='Apellido', max_length=100)
     rutaAsignada = forms.ChoiceField(label='Ruta Asignada', choices=RUTAS_CHOICES)
+
+class RegistroProveedorForm(forms.Form):
+    from appGiro.models import Proveedor
+    username = forms.CharField(label='Nombre de Usuario', max_length=150)
+    password = forms.CharField(label='Contraseña', widget=forms.PasswordInput)
+    nombre_empresa = forms.CharField(label='Nombre de la Empresa', max_length=150)
+    tipo = forms.ChoiceField(label='Tipo de Proveedor', choices=Proveedor.TIPO_CHOICES)

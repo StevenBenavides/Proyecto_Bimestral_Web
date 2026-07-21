@@ -6,12 +6,15 @@ urlpatterns = [
         path('', views.landing_page, name='landing'),
         path('login/', views.login_view, name='login'),
         path('logout/', views.logout_view, name='logout'),
-        path('registro/', views.registro_view, name='registro'),
+        path('registro/trabajador/', views.registro_trabajador_view, name='registro_trabajador'),
+        path('registro/proveedor/', views.registro_proveedor_view, name='registro_proveedor'),
         
-        # Rutas antiguas (Panel Principal)
+        # Proveedor Dashboard
+        path('proveedor/', views.dashboard_proveedor, name='dashboard_proveedor'),
+        path('proveedor/pedidos/', views.trazabilidad_proveedor, name='trazabilidad_proveedor'),
+        
+
         path('panel/', views.index, name='index'),
-        
-        # Vendedor
         path('vendedor/<int:id>', views.obtener_vendedor, name='obtener_vendedor'),
         path('crear/vendedor', views.crear_vendedor, name='crear_vendedor'),
         path('editar_vendedor/<int:id>', views.editar_vendedor, name='editar_vendedor'),

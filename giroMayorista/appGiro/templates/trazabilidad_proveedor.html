@@ -1,0 +1,94 @@
+{% extends 'master_proveedor.html' %}
+{% load static %}
+
+{% block title %}Trazabilidad de Pedidos | App Giro{% endblock %}
+
+{% block content %}
+<div class="card-container" style="margin-top: 40px;">
+    <h2>Trazabilidad de Pedidos</h2>
+    <p style="color: var(--text-muted); margin-bottom: 30px;">
+        Visualiza los detalles completos de todos los pedidos realizados a tu empresa ({{ proveedor.nombre_empresa }}).
+    </p>
+    <hr>
+    
+    {% for data in pedidos_data %}
+    <div class="card-container" style="border: 1px solid var(--primary-color); padding: 20px; margin-bottom: 25px;">
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-bottom: 15px;">
+            <div>
+                <h4 style="margin: 0; color: var(--primary-color);">{{ data.pedido.numeroPedido }}</h4>
+                <p style="font-size: 13px; color: var(--text-muted);">{{ data.pedido.fecha }} a las {{ data.pedido.hora|time:"H:i" }} | Estado: <strong>{{ data.pedido.estado }}</strong></p>
+            </div>
+            <div style="text-align: right;">
+                <h3 style="margin: 0;">${{ data.total_proveedor }}</h3>
+                <span class="badge badge-yellow">Destino: {{ data.pedido.cliente.rutaId }}</span>
+            </div>
+        </div>
+        
+        <form method="post" style="background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+            {% csrf_token %}
+            <input type="hidden" name="pedido_id" value="{{ data.pedido.id }}">
+            
+            <div style="display: flex; flex-direction: column;">
+                <label style="font-size: 12px; font-weight: bold; margin-bottom: 5px;">Estado del Pedido:</label>
+                <select name="estado" style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
+                    {% for val, text in estados %}
+                        <option value="{{ val }}" {% if data.pedido.estado == val %}selected{% endif %}>{{ text }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div style="display: flex; flex-direction: column;">
+                <label style="font-size: 12px; font-weight: bold; margin-bottom: 5px;">Ruta de Despacho:</label>
+                <select name="rutaAsignada" style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
+                    <option value="">-- Sin asignar --</option>
+                    {% for val, text in rutas %}
+                        <option value="{{ val }}" {% if data.pedido.rutaAsignada == val %}selected{% endif %}>{{ text }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div style="display: flex; align-items: flex-end; margin-top: auto;">
+                <button type="submit" class="btn-primary" style="padding: 8px 15px; font-size: 13px;">Actualizar Pedido</button>
+            </div>
+        </form>
+        
+        <div style="background: #f9f9fb; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+            <strong>Solicitado por:</strong> {{ data.pedido.vendedor.nombre }} {{ data.pedido.vendedor.apellido }} (Vendedor)<br>
+            <strong>Para Tienda/Cliente:</strong> {{ data.pedido.cliente.nombreTienda }} (Prop: {{ data.pedido.cliente.propietario }})
+        </div>
+
+        <h5>Detalle de Productos</h5>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto (SKU)</th>
+                        <th>Cant. Solicitada</th>
+                        <th>Costo Unitario</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detalle in data.detalles %}
+                    <tr>
+                        <td>{{ detalle.producto.nombre }} <span style="font-size: 11px; color: var(--text-muted);">({{ detalle.producto.codigoSKU }})</span></td>
+                        <td>{{ detalle.cantidadSolicitada }} {{ detalle.producto.unidadMedida }}</td>
+                        <td>${{ detalle.precioUnitario }}</td>
+                        <td style="font-weight: 600;">${{ detalle.subtotal }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center;">No hay detalles registrados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% empty %}
+    <div style="padding: 40px; text-align: center; color: var(--text-muted); background: #f9f9fb; border-radius: 8px;">
+        <p>Aún no has recibido ningún pedido.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

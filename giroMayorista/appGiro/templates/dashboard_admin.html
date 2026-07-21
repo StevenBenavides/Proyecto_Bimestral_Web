@@ -9,43 +9,44 @@ Dashboard | App Giro
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <div class="card-container" id="reporte-dashboard">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="margin-top: 0;">Dashboard Administrativo - KPIs</h2>
-        <button id="btn-descargar-pdf" class="btn-primary" style="background-color: #34c759;">📸 Descargar Reporte (Imagen)</button>
+    <div class="dashboard-header">
+        <h2 class="dashboard-title">Dashboard Administrativo - KPIs</h2>
+        <button id="btn-descargar-pdf" class="btn-primary btn-success">📸 Descargar Reporte (Imagen)</button>
     </div>
 
-    <div style="background-color: #f9f9fb; padding: 25px; border-radius: 12px; margin-bottom: 30px; border: 1px solid var(--border-color); display: flex; gap: 40px;">
+    <div class="kpi-container">
         <div>
-            <p style="color: var(--text-muted); font-size: 14px; text-transform: uppercase; font-weight: 600; margin: 0 0 5px 0;">Total Pedidos</p>
-            <h3 style="margin: 0; font-size: 32px; color: var(--text-main);">{{ total_pedidos }}</h3>
+            <p class="kpi-label">Total Pedidos</p>
+            <h3 class="kpi-value">{{ total_pedidos }}</h3>
         </div>
         <div>
-            <p style="color: var(--text-muted); font-size: 14px; text-transform: uppercase; font-weight: 600; margin: 0 0 5px 0;">Monto Total Vendido</p>
-            <h3 style="margin: 0; font-size: 32px; color: var(--primary-color);">$ {{ monto_total_vendido }}</h3>
+            <p class="kpi-label">Monto Total Vendido</p>
+            <h3 class="kpi-value-primary">$ {{ monto_total_vendido }}</h3>
         </div>
     </div>
 
     <!-- Área de Gráficas -->
-    <div style="display: flex; gap: 30px; margin-bottom: 40px; flex-wrap: wrap;">
+    <!-- Área de Gráficas -->
+    <div class="charts-container">
         <!-- Gráfico 1 -->
-        <div style="flex: 1; min-width: 300px; padding: 20px; border: 1px solid var(--border-color); border-radius: 12px;">
-            <h3 style="margin-top: 0; font-size: 16px; color: var(--text-muted); text-transform: uppercase;">Ventas Totales por Vendedor ($)</h3>
-            <div style="position: relative; height: 250px; width: 100%;">
+        <div class="chart-card">
+            <h3 class="chart-title">Ventas Totales por Vendedor ($)</h3>
+            <div class="chart-canvas-container">
                 <canvas id="graficoVentas"></canvas>
             </div>
         </div>
         
         <!-- Gráfico 2 -->
-        <div style="flex: 1; min-width: 300px; padding: 20px; border: 1px solid var(--border-color); border-radius: 12px;">
-            <h3 style="margin-top: 0; font-size: 16px; color: var(--text-muted); text-transform: uppercase;">Pedidos por Ruta / Zona</h3>
-            <div style="position: relative; height: 250px; width: 100%;">
+        <div class="chart-card">
+            <h3 class="chart-title">Pedidos por Ruta / Zona</h3>
+            <div class="chart-canvas-container">
                 <canvas id="graficoRutas"></canvas>
             </div>
         </div>
     </div>
 
-    <h3 style="margin-bottom: 20px;">Detalle de Rutas Más Abastecidas</h3>
-    <table style="width: 100%;">
+    <h3 class="table-title">Detalle de Rutas Más Abastecidas</h3>
+    <table class="full-width-table">
         <tr>
             <th>Ruta (Zona)</th>
             <th>Total de Clientes</th>
@@ -59,13 +60,13 @@ Dashboard | App Giro
         </tr>
         {% empty %}
         <tr>
-            <td colspan="3" style="text-align: center; color: var(--text-muted);">No hay datos de zonas suficientes para mostrar.</td>
+            <td colspan="3" class="empty-table-message">No hay datos de zonas suficientes para mostrar.</td>
         </tr>
         {% endfor %}
     </table>
 </div>
 
-<div style="margin-top: 30px; margin-bottom: 30px;">
+<div class="back-link-container">
     <a href="{% url 'index' %}" class="btn-secondary">← Volver al inicio</a>
 </div>
 

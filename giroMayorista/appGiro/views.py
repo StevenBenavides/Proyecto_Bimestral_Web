@@ -9,26 +9,26 @@ from django.utils import timezone
 from django.contrib import messages
 import uuid
 
-# importar las clases de models.py
 from appGiro.models import *
 
-# importar los formularios de forms.py
 from appGiro.forms import *
 
 
-# === VISTAS DE AUTENTICACIÓN Y LANDING PAGE ===
 
 def landing_page(request):
     """
         Pantalla inicial de la aplicación.
     """
     if request.user.is_authenticated:
-        if request.user.is_superuser:
+        if hasattr(request.user, 'proveedor'):
+            return redirect('dashboard_proveedor')
+        elif request.user.is_superuser:
             return redirect('dashboard_admin')
         else:
             return redirect('index')
             
-    return render(request, 'landing.html')
+    proveedores = Proveedor.objects.all()
+    return render(request, 'landing.html', {'proveedores': proveedores})
 
 def login_view(request):
     if request.method == 'POST':
@@ -37,7 +37,9 @@ def login_view(request):
         user = authenticate(request, username=u, password=p)
         if user is not None:
             login(request, user)
-            if user.is_superuser:
+            if hasattr(user, 'proveedor'):
+                return redirect('dashboard_proveedor')
+            elif user.is_superuser:
                 return redirect('dashboard_admin')
             else:
                 return redirect('index')
@@ -49,7 +51,7 @@ def logout_view(request):
     logout(request)
     return redirect('landing')
 
-def registro_view(request):
+def registro_trabajador_view(request):
     if request.method == 'POST':
         formulario = RegistroForm(request.POST)
         if formulario.is_valid():
@@ -59,10 +61,9 @@ def registro_view(request):
             a = formulario.cleaned_data['apellido']
             r = formulario.cleaned_data['rutaAsignada']
 
-            # Crear el usuario nativo de Django
+            
             user = User.objects.create_user(username=u, password=p, first_name=n, last_name=a)
             
-            # Crear el perfil del Intermediario (Vendedor) asociado a ese usuario
             Vendedor.objects.create(
                 usuario=user,
                 nombre=n,
@@ -77,10 +78,36 @@ def registro_view(request):
     else:
         formulario = RegistroForm()
         
-    return render(request, 'registro.html', {'formulario': formulario})
+    return render(request, 'registro_trabajador.html', {'formulario': formulario})
+
+def registro_proveedor_view(request):
+    if request.method == 'POST':
+        formulario = RegistroProveedorForm(request.POST)
+        if formulario.is_valid():
+            u = formulario.cleaned_data['username']
+            p = formulario.cleaned_data['password']
+            n = formulario.cleaned_data['nombre_empresa']
+            t = formulario.cleaned_data['tipo']
+
+            # Crear el usuario nativo de Django
+            user = User.objects.create_user(username=u, password=p)
+            
+            # Crear el perfil del Proveedor
+            Proveedor.objects.create(
+                usuario=user,
+                nombre_empresa=n,
+                tipo=t
+            )
+            
+            login(request, user)
+            return redirect('dashboard_proveedor')
+    else:
+        formulario = RegistroProveedorForm()
+        
+    return render(request, 'registro_proveedor.html', {'formulario': formulario})
 
 
-# === VISTAS DEL SISTEMA (Protegidas) ===
+
 
 @login_required(login_url='/login/')
 def index(request):
@@ -132,7 +159,7 @@ def eliminar_vendedor(request, id):
     vendedor.delete()
     return redirect(index)
 
-# === Vistas para el Cliente (Dueño de tienda) ===
+# Vistas para el Cliente Dueño de tienda
 
 @login_required(login_url='/login/')
 def crear_cliente(request):
@@ -179,15 +206,14 @@ def crear_pedido_cliente(request, id):
             pedido.totalMonto = 0.0 
             pedido.hora = timezone.now().time()
             pedido.estado = 'Pendiente'
-            # Generar numero de pedido automaticamente (Ej: PED-XXXX)
+            # Generar numero de pedido 
             pedido.numeroPedido = f"PED-{uuid.uuid4().hex[:6].upper()}"
-            pedido.save() # Guardamos para que genere un ID
+            pedido.save() 
             
             total_calculado = 0.0
             
-            # Recorrer todos los productos para ver cuáles fueron solicitados
+            
             for p in productos:
-                # El name del input en el HTML es producto_{id}
                 cantidad_str = request.POST.get(f'producto_{p.id}')
                 if cantidad_str:
                     try:
@@ -249,7 +275,7 @@ def dashboard_admin(request):
         total_pedidos_zona=Count('pedidos')
     ).order_by('-total_pedidos_zona')
     
-    # 1. Datos para Gráfico: Ventas por Vendedor
+    # 1. Datos para grafico: Ventas por vendedor
     ventas_vendedores = Vendedor.objects.annotate(
         total_ventas=Sum('pedidos__totalMonto')
     ).values('nombre', 'apellido', 'total_ventas')
@@ -260,7 +286,7 @@ def dashboard_admin(request):
         nombres_vendedores.append(f"{v['nombre']} {v['apellido']}")
         ventas_vendedores_data.append(float(v['total_ventas'] or 0.0))
         
-    # 2. Datos para Gráfico: Pedidos por Ruta
+    # 2. Datos para grafico: Pedidos por ruta
     nombres_rutas = []
     pedidos_rutas_data = []
     for z in zonas_abastecidas:
@@ -271,7 +297,6 @@ def dashboard_admin(request):
         'total_pedidos': total_pedidos,
         'monto_total_vendido': monto_total_vendido,
         'zonas_abastecidas': zonas_abastecidas,
-        # Variables JSON para Chart.js
         'nombres_vendedores_json': json.dumps(nombres_vendedores),
         'ventas_vendedores_json': json.dumps(ventas_vendedores_data),
         'nombres_rutas_json': json.dumps(nombres_rutas),
@@ -279,7 +304,6 @@ def dashboard_admin(request):
     }
     return render(request, 'dashboard_admin.html', diccionario)
 
-# === NUEVO MÓDULO DE TRAZABILIDAD PARA VENDEDORES ===
 
 @login_required(login_url='/login/')
 def mis_pedidos(request):
@@ -293,3 +317,81 @@ def mis_pedidos(request):
         pedidos = []
         
     return render(request, 'mis_pedidos.html', {'pedidos': pedidos})
+
+@login_required(login_url='/login/')
+def dashboard_proveedor(request):
+    try:
+        proveedor = request.user.proveedor
+    except:
+        return redirect('index') 
+        
+    if request.method == 'POST':
+        formulario = ProductoForm(request.POST)
+        if formulario.is_valid():
+            producto = formulario.save(commit=False)
+            producto.proveedor = proveedor
+            # Generar SKU automaticamente 
+            producto.codigoSKU = f"SKU-{uuid.uuid4().hex[:6].upper()}"
+            producto.save()
+            messages.success(request, 'Producto registrado exitosamente.')
+            return redirect('dashboard_proveedor')
+    else:
+        formulario = ProductoForm()
+        
+    productos = Producto.objects.filter(proveedor=proveedor)
+    
+    return render(request, 'dashboard_proveedor.html', {
+        'formulario': formulario,
+        'productos': productos,
+        'proveedor': proveedor
+    })
+
+@login_required(login_url='/login/')
+def trazabilidad_proveedor(request):
+    try:
+        proveedor = request.user.proveedor
+    except:
+        return redirect('index')
+        
+    if request.method == 'POST':
+        pedido_id = request.POST.get('pedido_id')
+        nuevo_estado = request.POST.get('estado')
+        nueva_ruta = request.POST.get('rutaAsignada')
+        
+        if pedido_id:
+            try:
+                pedido = Pedido.objects.get(id=pedido_id)
+                # Validar que el proveedor actual tenga que ver con este pedido
+                if pedido.detalles.filter(producto__proveedor=proveedor).exists():
+                    if nuevo_estado:
+                        pedido.estado = nuevo_estado
+                    if nueva_ruta:
+                        pedido.rutaAsignada = nueva_ruta
+                    pedido.save()
+                    messages.success(request, f'Pedido {pedido.numeroPedido} actualizado.')
+            except Pedido.DoesNotExist:
+                pass
+                
+        return redirect('trazabilidad_proveedor')
+        
+    # Buscar pedidos que contengan al menos un producto de este proveedor
+    pedidos_db = Pedido.objects.filter(detalles__producto__proveedor=proveedor).distinct().order_by('-fecha', '-hora')
+    
+    pedidos_data = []
+    for pedido in pedidos_db:
+        # Filtrar solo los detalles de productos de este proveedor
+        detalles_prov = pedido.detalles.filter(producto__proveedor=proveedor)
+        total_prov = sum(d.subtotal for d in detalles_prov)
+        
+        pedidos_data.append({
+            'pedido': pedido,
+            'detalles': detalles_prov,
+            'total_proveedor': total_prov
+        })
+    
+    return render(request, 'trazabilidad_proveedor.html', {
+        'pedidos_data': pedidos_data,
+        'proveedor': proveedor,
+        'estados': Pedido.ESTADO_CHOICES,
+        'rutas': RUTAS_CHOICES
+    })

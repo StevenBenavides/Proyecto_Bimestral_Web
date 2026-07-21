@@ -5,36 +5,39 @@ Crear Micromercado | App Giro
 {% endblock %}
 
 {% block content %}
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-<div class="card-container" style="max-width: 800px; margin: 0 auto;">
-    <h2 style="margin-top: 0; margin-bottom: 20px;">Registrar Nueva Tienda / Micromercado</h2>
+<div class="card-container register-store-container">
+    <h2 class="register-store-title">Registrar Nueva Tienda / Micromercado</h2>
 
     <form action="" method="post" id="clienteForm">
         {% csrf_token %}
         {{ formulario.as_p }}
-        
-        <!-- Contenedor del Mapa -->
-        <div style="margin-top: 20px; margin-bottom: 30px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <h3 style="margin: 0; font-size: 18px;">Ubicación de la Tienda</h3>
-                <button type="button" id="btn-geolocate" class="btn-secondary" style="background-color: #fff;">📍 Centrar en mi ubicación actual</button>
+
+
+        <div class="map-section-container">
+            <div class="map-header">
+                <h3 class="map-title">Ubicación de la Tienda</h3>
+                <button type="button" id="btn-geolocate" class="btn-secondary btn-geolocate-custom">📍
+                    Centrar en mi ubicación actual</button>
             </div>
-            <p style="font-size: 13px; color: var(--text-muted); margin-top: 0; margin-bottom: 10px;">Arrastra el marcador rojo o usa el botón para fijar la ubicación exacta del local.</p>
-            <div id="map" style="height: 350px; width: 100%; border-radius: 12px; border: 1px solid var(--border-color); z-index: 1;"></div>
+            <p class="map-description">Arrastra el
+                marcador rojo o usa el botón para fijar la ubicación exacta del local.</p>
+            <div id="map" class="map-container">
+            </div>
         </div>
-        
+
         <hr>
         <button type="submit" class="btn-primary">Guardar Tienda</button>
-        <a href="{% url 'index' %}" class="btn-secondary" style="margin-left: 10px;">Cancelar</a>
+        <a href="{% url 'index' %}" class="btn-secondary btn-cancel-custom">Cancelar</a>
     </form>
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         // Inicializar mapa (Centrado en Loja, Ecuador por defecto)
         var map = L.map('map').setView([-3.99313, -79.20422], 13);
 
@@ -44,7 +47,7 @@ Crear Micromercado | App Giro
         }).addTo(map);
 
         // Crear el marcador (Pin)
-        var marker = L.marker([-3.99313, -79.20422], {draggable: true}).addTo(map);
+        var marker = L.marker([-3.99313, -79.20422], { draggable: true }).addTo(map);
 
         // Input oculto/readonly de coordenadas
         var coordInput = document.getElementById('id_coordenadas');
@@ -72,31 +75,31 @@ Crear Micromercado | App Giro
         }
 
         // Evento: Cuando el usuario termina de arrastrar el pin
-        marker.on('dragend', function(e) {
+        marker.on('dragend', function (e) {
             updateCoordinates(marker.getLatLng());
         });
 
         // Evento: Cuando el usuario hace clic en el mapa
-        map.on('click', function(e) {
+        map.on('click', function (e) {
             marker.setLatLng(e.latlng);
             updateCoordinates(e.latlng);
         });
 
         // Botón de Geolocalización (HTML5)
-        document.getElementById('btn-geolocate').addEventListener('click', function() {
+        document.getElementById('btn-geolocate').addEventListener('click', function () {
             if ("geolocation" in navigator) {
                 this.innerText = "📍 Buscando...";
-                navigator.geolocation.getCurrentPosition(function(position) {
+                navigator.geolocation.getCurrentPosition(function (position) {
                     var lat = position.coords.latitude;
                     var lng = position.coords.longitude;
                     var newLatLng = new L.LatLng(lat, lng);
-                    
+
                     map.setView(newLatLng, 16);
                     marker.setLatLng(newLatLng);
                     updateCoordinates(newLatLng);
-                    
+
                     document.getElementById('btn-geolocate').innerText = "📍 Centrar en mi ubicación actual";
-                }, function(error) {
+                }, function (error) {
                     alert("No se pudo obtener la ubicación. Verifica los permisos de tu navegador.");
                     document.getElementById('btn-geolocate').innerText = "📍 Centrar en mi ubicación actual";
                 }, {

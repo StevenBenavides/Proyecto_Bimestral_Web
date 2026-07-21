@@ -1,16 +1,69 @@
-{% extends 'master.html' %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="es">
 
-{% block title %}Bienvenidos a Giro Mayorista{% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenidos a Giro Mayorista</title>
+    <link rel="stylesheet" href="{% static 'css/landing_premium.css' %}">
+</head>
 
-{% block content %}
-<div style="text-align: center; margin-top: 50px;">
-    <h2>Tu aliado en el abastecimiento</h2>
-    <p>Conectamos grandes proveedores con los micromercados más importantes de tu zona.</p>
-    
-    <div style="margin-top: 30px; display: flex; justify-content: center; gap: 20px;">
-        <a href="{% url 'login' %}" style="background-color: #FB4318; color: white; padding: 15px 25px; border-radius: 5px; text-decoration: none; font-weight: bold;">Ingresar al Sistema</a>
-        <a href="{% url 'registro' %}" style="background-color: #FFC22F; color: #333; padding: 15px 25px; border-radius: 5px; text-decoration: none; font-weight: bold;">Unirte como Vendedor</a>
-    </div>
-</div>
-{% endblock %}
+<body>
+
+
+    <nav class="landing-nav fade-up">
+        <a href="{% url 'landing' %}" class="landing-logo">Giro<span>App</span></a>
+        <div class="landing-nav-links">
+            <a href="#proveedores">Nuestros Proveedores</a>
+            <a href="{% url 'login' %}">Iniciar Sesión</a>
+            <a href="#registro" class="btn-premium">Registrarse</a>
+        </div>
+    </nav>
+
+
+    <section class="hero-section">
+
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+
+        <div class="hero-content fade-up" style="animation-delay: 0.3s;">
+            <h1>Tu aliado <span>estratégico</span> en el abastecimiento.</h1>
+            <p>Conectamos a grandes proveedores (mayoristas y minoristas) con los micromercados, tiendas de barrio y
+                vendedores autónomos de tu zona. Una red inteligente para tu negocio.</p>
+
+            <div id="registro" class="hero-buttons">
+                <a href="{% url 'registro_proveedor' %}" class="btn-premium">Soy Proveedor (Mayorista/Minorista)</a>
+                <a href="{% url 'registro_trabajador' %}" class="btn-outline">Soy Vendedor Autónomo / Tienda</a>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="proveedores" class="proveedores-section fade-up">
+        <h2>Nuestros Proveedores Registrados</h2>
+        <p>Empresas líderes que ya confían en nuestra plataforma logística para distribuir sus productos de manera
+            inteligente.</p>
+
+        <div class="proveedores-grid">
+            {% for prov in proveedores %}
+            <div class="prov-card">
+                <h3>{{ prov.nombre_empresa }}</h3>
+                {% if prov.tipo == 'Mayorista' %}
+                <span class="badge badge-mayorista">{{ prov.tipo }}</span>
+                {% else %}
+                <span class="badge badge-minorista">{{ prov.tipo }}</span>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div
+                style="grid-column: 1 / -1; color: var(--gray-dark); padding: 40px; border: 1px dashed #ccc; border-radius: 20px;">
+                <p style="margin: 0;">Aún no hay proveedores registrados. ¡Únete a la red y sé el primero!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+</body>
+
+</html>

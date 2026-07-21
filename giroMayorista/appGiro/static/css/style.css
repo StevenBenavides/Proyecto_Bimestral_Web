@@ -428,3 +428,189 @@ footer {
     color: var(--text-muted);
     font-size: 13px;
 }
+
+/* Custom styles for registrar tienda page */
+.register-store-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.register-store-title {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.map-section-container {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.map-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.map-title {
+    margin: 0;
+    font-size: 18px;
+}
+
+.btn-geolocate-custom {
+    background-color: #fff;
+}
+
+.map-description {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.map-container {
+    height: 350px;
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    z-index: 1;
+}
+
+.btn-cancel-custom {
+    margin-left: 10px;
+}
+
+/* Dashboard Shared Styles */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.dashboard-title {
+    margin-top: 0;
+}
+
+.btn-success {
+    background-color: #34c759;
+}
+
+.kpi-container {
+    background-color: #f9f9fb;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    gap: 40px;
+}
+
+.kpi-label {
+    color: var(--text-muted);
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin: 0 0 5px 0;
+}
+
+.kpi-value {
+    margin: 0;
+    font-size: 32px;
+    color: var(--text-main);
+}
+
+.kpi-value-primary {
+    margin: 0;
+    font-size: 32px;
+    color: var(--primary-color);
+}
+
+.charts-container {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.chart-card {
+    flex: 1;
+    min-width: 300px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+.chart-title {
+    margin-top: 0;
+    font-size: 16px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.chart-canvas-container {
+    position: relative;
+    height: 250px;
+    width: 100%;
+}
+
+.table-title {
+    margin-bottom: 20px;
+}
+
+.full-width-table {
+    width: 100%;
+}
+
+.empty-table-message {
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.back-link-container {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+/* Provider Dashboard Styles */
+.provider-dashboard-container {
+    margin-top: 40px;
+}
+
+.provider-profile-text {
+    color: var(--text-muted);
+}
+
+.form-description {
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.btn-full-width {
+    width: 100%;
+    margin-top: 15px;
+}
+
+.provider-ecommerce-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.product-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+}
+
+.badge-small {
+    font-size: 11px;
+}
+
+.empty-grid-message {
+    grid-column: 1 / -1;
+    padding: 40px;
+    text-align: center;
+    color: var(--text-muted);
+    background: #f9f9fb;
+    border-radius: 8px;
+}

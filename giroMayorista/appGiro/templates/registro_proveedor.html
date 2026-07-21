@@ -1,0 +1,21 @@
+{% extends 'master.html' %}
+
+{% block title %}Registro de Proveedor | App Giro{% endblock %}
+
+{% block content %}
+<div class="card-container" style="max-width: 500px; margin: 40px auto;">
+    <h2 style="text-align: center;">Únete como Proveedor</h2>
+    <p style="text-align: center; color: var(--text-muted);">Registra tu empresa y distribuye tus productos en nuestra red.</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ formulario.as_p }}
+        
+        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 15px;">Registrar Empresa</button>
+    </form>
+
+    <p style="text-align: center; margin-top: 20px;">
+        ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión</a>
+    </p>
+</div>
+{% endblock %}

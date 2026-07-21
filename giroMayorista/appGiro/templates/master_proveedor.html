@@ -10,68 +10,68 @@
 
     {% load static %}
 
+    <!-- CSS personalizado -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
     <title>
         {% block title %}
-        App Giro
+        Panel de Proveedor
         {% endblock %}
     </title>
 </head>
 
 <body>
 
+    <!-- ***** Header Area Start ***** -->
     <header class="header-area">
         <div class="container">
             <div class="row">
                 <div class="col-12">
                     <nav class="main-nav">
-                        <a href="{% url 'index' %}" class="logo">
-                            <h4>Giro<span>Mayorista</span></h4>
+                        <!-- ***** Logo Start ***** -->
+                        <a href="{% url 'dashboard_proveedor' %}" class="logo">
+                            <h4>Giro<span>Proveedor</span></h4>
                         </a>
+                        <!-- ***** Logo End ***** -->
+
+                        <!-- ***** Menu Start ***** -->
                         <ul class="nav">
                             {% if user.is_authenticated %}
-                            <li><a href="{% url 'index' %}">Panel Tiendas</a></li>
-                            {% if user.is_superuser %}
-                            <li><a href="{% url 'crear_vendedor' %}">Nuevo Trabajador</a></li>
-                            <li><a href="{% url 'crear_cliente' %}">Nueva Tienda</a></li>
-                            <li><a href="{% url 'dashboard_admin' %}" class="btn-primary">Dashboard</a></li>
+                                <li><a href="{% url 'dashboard_proveedor' %}">Mis Productos</a></li>
+                                <li><a href="{% url 'trazabilidad_proveedor' %}">Trazabilidad de Pedidos</a></li>
+                                <li><a href="{% url 'logout' %}" class="btn-secondary">Salir ({{ user.username }})</a></li>
                             {% else %}
-                            <li><a href="{% url 'mis_pedidos' %}">Mis Pedidos</a></li>
-                            {% endif %}
-                            <li><a href="{% url 'logout' %}" class="btn-secondary">Salir ({{ user.username }})</a></li>
-                            {% else %}
-                            <li><a href="{% url 'landing' %}">Inicio</a></li>
-                            <li><a href="{% url 'login' %}">Ingresar</a></li>
-                            <li><a href="{% url 'landing' %}#registro" class="btn-primary">Únete</a></li>
+                                <li><a href="{% url 'landing' %}">Inicio</a></li>
+                                <li><a href="{% url 'login' %}">Ingresar</a></li>
                             {% endif %}
                         </ul>
+                        <!-- ***** Menu End ***** -->
                     </nav>
                 </div>
             </div>
         </div>
     </header>
+    <!-- ***** Header Area End ***** -->
 
-
-
-    <div class="main-banner" id="top">
+    <!-- ***** Banner ***** -->
+    <div class="main-banner" id="top" style="padding: 20px 20px; margin-bottom: 20px;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="left-content header-text">
-                        <h6>Sistema de Pedidos</h6>
-                        <h2>Abastecimiento para <em>Micromercados</em></h2>
+                        <h6>Centro de Control</h6>
+                        <h2>Panel de <em>Proveedor</em></h2>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-
-    <div id="services" class="our-services section">
+    <!-- ***** Main Content Area ***** -->
+    <div id="services" class="our-services section" style="padding-top: 20px;">
         <div class="container">
-
-
+            
+            <!-- Django Messages Toast -->
             {% if messages %}
             <div class="toast-container">
                 {% for message in messages %}
@@ -81,10 +81,10 @@
                 </div>
                 {% endfor %}
             </div>
-
+            
             <script>
-
-                setTimeout(function () {
+                // Auto-dismiss after 5 seconds
+                setTimeout(function() {
                     const toasts = document.querySelectorAll('.toast-message');
                     toasts.forEach(toast => {
                         toast.style.opacity = '0';
@@ -96,6 +96,7 @@
 
             <div class="row">
                 <div class="col-lg-12">
+                    <!-- Bloque dinámico para las vistas hijas -->
                     {% block content %}
                     {% endblock %}
                 </div>
@@ -109,7 +110,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <p>Proyecto Bimestral GIRO - Loja, Ecuador
+                    <p>Proyecto Bimestral GIRO - Panel de Proveedor
                         <br>{% now "j F Y H:i" %}
                     </p>
                 </div>

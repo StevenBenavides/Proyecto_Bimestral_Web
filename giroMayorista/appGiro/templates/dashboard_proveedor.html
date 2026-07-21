@@ -1,0 +1,61 @@
+{% extends 'master_proveedor.html' %}
+{% load static %}
+
+{% block title %}Dashboard Proveedor | App Giro{% endblock %}
+
+{% block content %}
+<div class="card-container provider-dashboard-container">
+    <h2>Bienvenido, {{ proveedor.nombre_empresa }}</h2>
+    <p class="provider-profile-text">
+        Perfil:
+        {% if proveedor.tipo == 'Mayorista' %}
+        <span class="badge badge-green">{{ proveedor.tipo }}</span>
+        {% else %}
+        <span class="badge badge-yellow">{{ proveedor.tipo }}</span>
+        {% endif %}
+    </p>
+    <hr>
+
+    <div class="row">
+
+        <div class="col-lg-5 col-md-12">
+            <div class="formulario-encabezado">
+                <h3>Registrar Nuevo Producto</h3>
+                <p class="form-description">Añade tus productos para que
+                    estén disponibles para los vendedores y tiendas.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ formulario.as_p }}
+                    <button type="submit" class="btn-primary btn-full-width">Guardar
+                        Producto</button>
+                </form>
+            </div>
+        </div>
+
+
+        <div class="col-lg-7 col-md-12">
+            <h3>Mis Productos Publicados</h3>
+
+            <div class="ecommerce-grid provider-ecommerce-grid">
+                {% for prod in productos %}
+                <div class="product-card">
+                    <div class="product-card-header">
+                        <h4>{{ prod.nombre }}</h4>
+                        <span class="badge badge-gray badge-small">{{ prod.categoria.nombreCategoria
+                            }}</span>
+                    </div>
+                    <p class="sku">SKU: {{ prod.codigoSKU }}</p>
+                    <p class="desc">{{ prod.descripcion|truncatechars:50 }}</p>
+                    <p class="precio">${{ prod.precioUnitario }}</p>
+                    <p class="stock">Stock: {{ prod.stockDiponible }} {{ prod.unidadMedida }}</p>
+                </div>
+                {% empty %}
+                <div class="empty-grid-message">
+                    <p>Aún no has registrado ningún producto.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

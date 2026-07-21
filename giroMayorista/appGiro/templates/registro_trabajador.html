@@ -1,17 +1,17 @@
 {% extends 'master.html' %}
 
-{% block title %}Registro de Intermediario | App Giro{% endblock %}
+{% block title %}Registro de Vendedor | App Giro{% endblock %}
 
 {% block content %}
 <div class="card-container" style="max-width: 500px; margin: 40px auto;">
     <h2 style="text-align: center;">Trabaja con Nosotros</h2>
-    <p style="text-align: center; color: #666;">Crea tu cuenta como Intermediario/Vendedor</p>
+    <p style="text-align: center; color: var(--text-muted);">Crea tu cuenta como Trabajador, Vendedor Autónomo o Dueño de Tienda</p>
     
     <form method="post">
         {% csrf_token %}
         {{ formulario.as_p }}
         
-        <button type="submit" style="width: 100%; margin-top: 15px;">Registrarse</button>
+        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 15px;">Crear cuenta de Vendedor</button>
     </form>
 
     <p style="text-align: center; margin-top: 20px;">
