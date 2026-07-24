@@ -120,7 +120,8 @@ class Producto(models.Model):
         super().save(*args, **kwargs)
 
     def generar_sku(self):
-        # Genera un SKU basado en el proveedor y un numero random
+        # Genera un Unidad de Mantenimiento de Stock (SKU) 
+        # basado en el proveedor y un numero random
         prefijo = self.proveedor.nombre_empresa[:3].upper() if self.proveedor else "PRD"
         numero = random.randint(1000, 9999)
         return f"{prefijo}-{numero}"
@@ -151,11 +152,13 @@ class Pedido(models.Model):
     numero_contacto = models.CharField(max_length=15, null=True, blank=True)
 
     def save(self, *args, **kwargs):
+        # Genera un numero de pedido unico si no existe
         if not self.numero_pedido:
             self.numero_pedido = self.generar_numero_pedido()
         super().save(*args, **kwargs)
 
     def generar_numero_pedido(self):
+        #logica para generar un numero de pedido unico basado en la fecha y un numero random
         fecha_str = datetime.datetime.now().strftime("%Y%m%d")
         numero = random.randint(1000, 9999)
         return f"PED-{fecha_str}-{numero}"
@@ -199,7 +202,9 @@ class SolicitudVisita(models.Model):
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='Pendiente')
     
     def __str__(self):
+        # Logica para mostrar la solicitud de visita con el nombre de la tienda y el vendedor
         return f"Visita solicitada por {self.tienda.nombre_tienda} a {self.vendedor.nombre} - {self.estado}"
 
     def get_subtotal(self):
+        # Calcula el subtotal del detalle del pedido
         return self.cantidad * self.precio_unitario

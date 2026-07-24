@@ -188,9 +188,7 @@ def gestionar_pedido(request, id):
     if request.method == 'POST':
         formulario = GestionarPedidoForm(request.POST, instance=pedido)
         if formulario.is_valid():
-            # Nota: El avance de estado se maneja usualmente por el método avanzar_estado()
-            # que definiste en el modelo, pero aquí permitimos setearlo si respeta la secuencia
-            # Por simplicidad del UI, si guardan el form normal, lo asume.
+            # Aqui podríamos agregar lógica adicional para manejar el estado del pedido, notificaciones, etc.
             formulario.save()
             return redirect('mis_pedidos')
     else:
@@ -238,6 +236,8 @@ def explorar_proveedores(request):
 
 @login_required
 def enviar_solicitud(request, proveedor_id):
+    
+    # Vista para que un vendedor envíe una solicitud a un proveedor
     if not hasattr(request.user, 'perfil_vendedor'):
         return redirect('index')
         
