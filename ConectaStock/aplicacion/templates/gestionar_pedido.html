@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Pedido | Dashboard Proveedor</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo"><a href="{% url 'dashboard_proveedor' %}"
+                        style="text-decoration: none; color: inherit;">Conecta<span
+                            class="color-accent">Stock</span></a></strong>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><a href="{% url 'mis_pedidos' %}" class="btn btn-secondary btn-sm">Volver a Pedidos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="container dashboard-section">
+            <div class="form-card mx-auto" style="max-width: 800px;">
+
+                <div class="section-header text-center mb-lg">
+                    <h2 class="section-title font-1-5rem">Pedido {{ pedido.numero_orden }}</h2>
+                    <p class="section-desc">Gestiona el estado y trazabilidad de este pedido.</p>
+                </div>
+
+                <!-- Resumen de Información del Pedido -->
+                <div class="info-grid">
+                    <div>
+                        <p class="mb-sm"><strong>Tienda:</strong> {{ pedido.tienda.nombre_tienda }}</p>
+                        <p class="mb-sm"><strong>Vendedor:</strong> {{ pedido.vendedor.nombre }} {{
+                            pedido.vendedor.apellido }}</p>
+                        <p class="mb-sm"><strong>Fecha Creación:</strong> {{ pedido.fecha_creacion|date:"d M Y, H:i" }}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="mb-sm"><strong>Monto Total:</strong> <span class="price-highlight">${{
+                                pedido.monto_total }}</span></p>
+                        <p class="mb-sm"><strong>Método de Pago:</strong> {{ pedido.metodo_pago }}</p>
+                        {% if pedido.numero_transferencia %}
+                        <p class="mb-sm"><strong>Ref. Transferencia:</strong> {{ pedido.numero_transferencia }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <hr class="divider-line">
+
+                <h3 class="mb-md">Actualizar Trazabilidad</h3>
+                <form action="{% url 'gestionar_pedido' pedido.id %}" method="post">
+                    {% csrf_token %}
+
+                    {% for field in formulario %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <p class="form-help-text">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <p class="errorlist">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="text-right mt-lg">
+                        <button type="submit" class="btn btn-primary btn-large">Guardar Cambios de Pedido</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </main>
+
+</body>
+
+</html>

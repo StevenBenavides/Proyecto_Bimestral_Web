@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Vendedores | Dashboard Proveedor</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo">
+                    <a href="{% url 'dashboard_proveedor' %}" class="text-decoration-none text-inherit">Conecta<span
+                            class="color-accent">Stock</span></a>
+                </strong>
+                <span class="header-badge">Vendedores</span>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><strong class="text-primary">{{ proveedor.nombre_empresa }}</strong></li>
+                    <li><a href="{% url 'dashboard_proveedor' %}" class="btn btn-secondary btn-sm">Volver al Resumen</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <nav class="dashboard-nav">
+        <div class="container">
+            <ul>
+                <li><a href="{% url 'dashboard_proveedor' %}">Resumen</a></li>
+                <li><a href="{% url 'mis_productos' %}">Mi Catálogo</a></li>
+                <li><a href="{% url 'mis_vendedores' %}" class="active">Mis Vendedores</a></li>
+                <li><a href="{% url 'mis_pedidos' %}">Mis Pedidos</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="dashboard-main">
+        <section class="container dashboard-section">
+
+            <h1 class="font-1-8rem mb-lg">Gestión de Fuerza de Ventas</h1>
+
+            <!-- Sección Solicitudes Pendientes -->
+            <div class="mb-lg">
+                <h2 class="font-1-4rem mb-sm text-info">Solicitudes Pendientes</h2>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Vendedor</th>
+                                <th>Ciudad / Sector</th>
+                                <th>Motivación</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sol in solicitudes %}
+                            <tr>
+                                <td>{{ sol.fecha_solicitud|date:"d M Y" }}</td>
+                                <td><strong>{{ sol.vendedor.nombre }} {{ sol.vendedor.apellido }}</strong><br><small>{{ sol.vendedor.correo }}</small></td>
+                                <td>{{ sol.vendedor.ciudad }} <br> <small>{{ sol.vendedor.sector }}</small></td>
+                                <td>{{ sol.descripcion_ganas|truncatewords:8 }}</td>
+                                <td>
+                                    <a href="{% url 'aprobar_solicitud' sol.id %}"
+                                        class="btn btn-primary btn-sm">Revisar y Aprobar</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center-empty">
+                                    No hay solicitudes de vendedores pendientes.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sección Vendedores Aprobados -->
+            <div>
+                <h2 class="font-1-4rem mb-sm text-success">Vendedores Activos en tu Red</h2>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Desde</th>
+                                <th>Vendedor</th>
+                                <th>Contacto</th>
+                                <th>Comisión Asignada</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sol in activos %}
+                            <tr>
+                                <td>{{ sol.fecha_solicitud|date:"d M Y" }}</td>
+                                <td><strong>{{ sol.vendedor.nombre }} {{ sol.vendedor.apellido }}</strong></td>
+                                <td>{{ sol.vendedor.telefono }}</td>
+                                <td><strong>{{ sol.comision }}%</strong></td>
+                                <td><span class="badge badge-success">Activo</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center-empty">
+                                    Aún no has aprobado a ningún vendedor.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+</body>
+
+</html>

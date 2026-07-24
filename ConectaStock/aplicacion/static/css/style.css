@@ -1,0 +1,511 @@
+/* ==========================================================================
+   Variables de Diseño (Paleta Corporativa + Estilo Branch Premium)
+   ========================================================================== */
+:root {
+    /* Colores Corporativos */
+    --primary-color: #FB4318; 
+    --primary-hover: #e03b13; 
+    --secondary-color: #FFC22F; 
+    --text-link: #C43312; 
+    
+    /* Tonos Premium estilo Branch (Beige cálido usando tu secundario) */
+    --branch-warm-bg: rgba(255, 194, 47, 0.06); 
+    
+    /* Grises y Neutros */
+    --card-bg: #ffffff;
+    --text-main: #1d1d1f;
+    --text-muted: #6e6e73;
+    
+    /* Estética y Ergonomía */
+    --border-radius: 16px;
+    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    
+    /* Espaciados amplios */
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 40px;
+    --space-xxl: 96px; 
+    
+    /* Accesibilidad WCAG 2.1 AA */
+    --min-touch-target: 44px;
+}
+
+/* ==========================================================================
+   Reset y Base
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--card-bg); /* Blanco por defecto */
+    color: var(--text-main);
+    line-height: 1.6;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Clases de Utilidad */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+}
+
+.text-center { text-align: center; }
+.justify-center { justify-content: center; }
+
+/* Sangrado completo para las secciones (Full Bleed) */
+.full-bleed {
+    width: 100%;
+    margin: 0;
+    padding: var(--space-xxl) 0;
+}
+
+/* Accesibilidad: Foco visible */
+:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 4px;
+}
+
+/* ==========================================================================
+   Botones y Enlaces
+   ========================================================================== */
+a { color: var(--text-link); text-decoration: underline; text-underline-offset: 3px; }
+a:hover { color: var(--primary-hover); }
+
+.btn {
+    font-family: var(--font-family);
+    font-weight: 600;
+    border-radius: 30px; /* Bordes más redondeados tipo D2C */
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-large {
+    min-height: 56px;
+    padding: 0 var(--space-xl);
+    font-size: 1.1rem;
+}
+
+.btn-sm {
+    min-height: 44px;
+    padding: 0 var(--space-lg);
+    font-size: 0.95rem;
+}
+
+.btn-primary { 
+    background-color: var(--primary-color); 
+    color: #ffffff; 
+    box-shadow: 0 8px 20px rgba(251, 67, 24, 0.25);
+}
+.btn-primary:hover { 
+    background-color: var(--primary-hover); 
+    color: #ffffff; 
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(251, 67, 24, 0.35);
+}
+
+.btn-secondary { 
+    background-color: #ffffff; 
+    color: var(--text-main); 
+    border: 1px solid rgba(0,0,0,0.1); 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.btn-secondary:hover { 
+    background-color: #f9f9f9; 
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+}
+
+/* ==========================================================================
+   Cabecera
+   ========================================================================== */
+.b2b-header {
+    background-color: rgba(255, 255, 255, 0.98);
+    padding: var(--space-md) 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.header-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand-logo { font-size: 1.5rem; letter-spacing: -0.5px; }
+.color-accent { color: var(--primary-color); }
+
+.nav-links { list-style: none; display: flex; gap: var(--space-lg); align-items: center; }
+.nav-links a:not(.btn) { 
+    text-decoration: none; 
+    color: var(--text-main); 
+    font-weight: 500; 
+    min-height: var(--min-touch-target); 
+    display: flex; 
+    align-items: center; 
+}
+.nav-links a:not(.btn):hover { color: var(--primary-color); }
+
+/* ==========================================================================
+   Secciones y Tipografía (Estilo Branch)
+   ========================================================================== */
+.hero-section, .roles-section {
+    background-color: var(--branch-warm-bg); /* Fondo beige cálido corporativo */
+}
+
+.hero-content {
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+.hero-title {
+    font-size: 4rem;
+    line-height: 1.1;
+    margin-bottom: var(--space-lg);
+    color: var(--text-main);
+    letter-spacing: -0.04em;
+    font-weight: 800;
+}
+
+.text-highlight { color: var(--primary-color); }
+
+.hero-subtitle {
+    font-size: 1.35rem;
+    color: var(--text-muted);
+    margin-bottom: var(--space-xl);
+    line-height: 1.5;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-actions { display: flex; gap: var(--space-md); flex-wrap: wrap; }
+
+.section-header, .roles-header {
+    max-width: 700px;
+    margin: 0 auto var(--space-xl);
+}
+
+.section-title { 
+    font-size: 2.5rem; 
+    font-weight: 700; 
+    color: var(--text-main); 
+    letter-spacing: -0.03em; 
+    margin-bottom: var(--space-sm);
+    line-height: 1.2;
+}
+
+.section-desc { 
+    font-size: 1.15rem; 
+    color: var(--text-muted); 
+}
+
+/* ==========================================================================
+   Tarjetas Soft UI (Proveedores y Roles)
+   ========================================================================== */
+.providers-grid, .roles-grid {
+    display: grid;
+    gap: var(--space-xl);
+}
+
+.providers-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.roles-grid { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+
+/* Base para todas las tarjetas (Estilo Branch sin bordes duros) */
+.provider-card, .role-card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: var(--space-xl) var(--space-lg);
+    text-align: center;
+    border: none;
+    /* Sombra extra suave */
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.provider-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.provider-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+}
+
+.provider-logo {
+    width: 72px; height: 72px;
+    background-color: var(--branch-warm-bg);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: var(--text-main);
+    margin-bottom: var(--space-md);
+    font-size: 1.2rem;
+}
+
+/* Tarjetas de Roles (Interactivas) */
+.role-card {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.role-card:hover, .role-card:focus {
+    transform: translateY(-8px);
+    /* Sombra más profunda al interactuar */
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.08), 0 8px 16px rgba(0, 0, 0, 0.03);
+    text-decoration: none;
+}
+
+.role-icon-wrapper { margin-bottom: var(--space-lg); }
+.role-icon { font-size: 3.5rem; }
+.role-title { font-size: 1.6rem; font-weight: 700; margin-bottom: var(--space-sm); color: var(--text-main); }
+.role-desc { color: var(--text-muted); margin-bottom: var(--space-xl); flex-grow: 1; font-size: 1.05rem; }
+
+.role-action-link {
+    font-weight: 600;
+    color: var(--text-link);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+    transition: color 0.2s ease, text-decoration-thickness 0.2s ease;
+}
+
+.role-card:hover .role-action-link {
+    color: var(--primary-hover);
+    text-decoration-thickness: 2px;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.b2b-footer {
+    background-color: #111111;
+    color: #ffffff;
+    text-align: center;
+    padding: var(--space-xl) 0;
+}
+
+.b2b-footer p { opacity: 0.7; font-size: 0.9rem; }
+
+/* ==========================================================================
+   Formularios Estilo Premium
+   ========================================================================== */
+.form-section {
+    background-color: var(--branch-warm-bg);
+    padding: var(--space-xxl) 0;
+    min-height: calc(100vh - 80px);
+}
+
+.form-card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: var(--space-xl);
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+}
+
+.form-group {
+    margin-bottom: var(--space-lg);
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: var(--space-sm);
+    color: var(--text-main);
+}
+
+.form-control, .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--text-main);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: #fafafa;
+}
+
+.form-control:focus, .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(251, 67, 24, 0.1);
+    background-color: #ffffff;
+}
+
+.form-help-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.errorlist {
+    color: #d93025;
+    list-style: none;
+    font-size: 0.9rem;
+    margin-bottom: var(--space-sm);
+    padding: 0;
+}
+
+/* ==========================================================================
+   Mapa Leaflet
+   ========================================================================== */
+#map {
+    width: 100%;
+    height: 350px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.15);
+    margin-bottom: var(--space-sm);
+    z-index: 1; /* Para evitar superposición con el header */
+}
+
+/* ==========================================================================
+   Dashboard UI
+   ========================================================================== */
+.dashboard-nav {
+    background-color: var(--card-bg);
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding: var(--space-sm) 0;
+}
+
+.dashboard-nav ul {
+    list-style: none;
+    display: flex;
+    gap: var(--space-md);
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+}
+
+.dashboard-nav a {
+    text-decoration: none;
+    color: var(--text-main);
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.dashboard-nav a:hover, .dashboard-nav a.active {
+    background-color: rgba(251, 67, 24, 0.1);
+    color: var(--primary-color);
+}
+
+/* Layout y Contenedores */
+.dashboard-main { background-color: #fafafa; min-height: calc(100vh - 140px); padding-bottom: var(--space-xl); }
+.dashboard-section { padding-top: var(--space-xl); }
+.header-badge { margin-left: 10px; padding-left: 10px; border-left: 1px solid #ddd; color: var(--text-muted); font-size: 0.9rem; }
+.footer-compact { padding: var(--space-sm) 0; margin-top: auto; }
+
+/* Grid de Métricas */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-md); }
+.metric-card { padding: var(--space-md); text-align: center; border: 2px solid transparent; }
+.metric-card.active-border { border-color: #4285f4; }
+.metric-title { color: var(--text-muted); font-size: 1rem; margin-bottom: 8px; }
+.metric-value { font-size: 3rem; font-weight: bold; margin: 0; }
+.metric-value.primary { color: var(--primary-color); }
+.metric-value.warning { color: #f5b041; }
+.metric-value.success { color: #34a853; }
+.metric-value.info { color: #4285f4; }
+
+/* Data Tables */
+.table-responsive {
+    overflow-x: auto;
+    margin-top: var(--space-md);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.data-table th, .data-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.data-table th {
+    background-color: #fafafa;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+.data-table tr:hover td {
+    background-color: rgba(0,0,0,0.02);
+}
+
+.td-img { width: 60px; }
+.img-avatar { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; }
+.img-placeholder { width: 40px; height: 40px; background: #eee; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+
+/* Elementos y Tipografía */
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.badge-pending { background-color: #fff3cd; color: #856404; }
+.badge-success { background-color: #d4edda; color: #155724; }
+.badge-info { background-color: #d1ecf1; color: #0c5460; }
+.badge-route { background-color: #cce5ff; color: #004085; }
+
+.font-mono { font-family: monospace; font-weight: bold; }
+.font-1-8rem { font-size: 1.8rem; }
+.font-1-5rem { font-size: 1.5rem; }
+.font-2rem { font-size: 2rem; }
+.text-muted { color: var(--text-muted); }
+.text-primary { color: var(--primary-color); font-weight: bold; }
+.text-center-empty { text-align: center; padding: var(--space-lg); color: var(--text-muted); }
+
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+.w-100 { width: 100%; }
+
+/* Botones específicos */
+.btn-logout { background: none; border: none; padding: 0; color: #d93025; font-weight: bold; cursor: pointer; }
+.btn-danger-outline { color: #d93025; border-color: #fce8e6; background-color: #fce8e6; margin-right: 8px; }
+
+/* Componentes de Detalle */
+.info-box { background: #f1f3f4; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-bottom: var(--space-lg); background: #fff; padding: var(--space-md); border-radius: 8px; border: 1px solid rgba(0,0,0,0.05); }
+.blockquote-custom { font-style: italic; color: #555; border-left: 4px solid var(--primary-color); padding-left: 10px; margin: 10px 0; }
+.divider-line { border: 0; border-top: 1px solid rgba(0,0,0,0.1); margin: var(--space-lg) 0; }
+.price-highlight { color: var(--primary-color); font-weight: bold; font-size: 1.2rem; }

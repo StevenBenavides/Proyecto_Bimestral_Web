@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Tienda | ConectaStock</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- Librería Leaflet para el Mapa -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+
+<body>
+
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo"><a href="{% url 'index' %}"
+                        style="text-decoration: none; color: inherit;">Conecta<span
+                            class="color-accent">Stock</span></a></strong>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><a href="{% url 'index' %}">Volver al Inicio</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="form-section full-bleed">
+            <div class="container">
+                <div class="form-card">
+                    <div class="section-header text-center mb-lg">
+                        <h2 class="section-title font-2rem">Registro de Tienda</h2>
+                        <p class="section-desc font-1rem">Regístrate como tienda para solicitar productos
+                            y atención de vendedores de la red.</p>
+                    </div>
+
+                    <form action="{% url 'crear_tienda' %}" method="post">
+                        {% csrf_token %}
+
+                        {% if formulario.non_field_errors %}
+                        <ul class="errorlist">
+                            {% for error in formulario.non_field_errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+
+                        {% for field in formulario %}
+                        {% if field.name == 'ubicacion_lat' or field.name == 'ubicacion_lng' %}
+                        {{ field }} <!-- Campos ocultos para capturar lat y lng -->
+                        {% else %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <p class="form-help-text">{{ field.help_text }}</p>
+                            {% endif %}
+                            {% for error in field.errors %}
+                            <p class="errorlist">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+
+                        <!-- Contenedor del Mapa Leaflet -->
+                        <div class="form-group">
+                            <label>Selecciona la ubicación exacta de tu Tienda</label>
+                            <p class="form-help-text mb-sm">Mueve el marcador o haz clic en el
+                                mapa.</p>
+                            <div id="map"></div>
+                        </div>
+
+                        <div class="text-center mt-xl">
+                            <button type="submit" class="btn btn-primary btn-large w-100">Registrar
+                                Tienda</button>
+                            <p class="mt-md text-muted">
+                                ¿Ya tienes una Tienda registrada? <a href="{% url 'login' %}">Iniciar Sesión</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="b2b-footer full-bleed">
+        <div class="container">
+            <p>&copy; 2026 NexusB2B. Plataforma de Intermediación Comercial. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Lógica de Leaflet -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Inicializar mapa centrado en una ubicación por defecto (Ej: Loja, Ecuador)
+            var map = L.map('map').setView([-3.99313, -79.20422], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Marcador arrastrable
+            var marker = L.marker([-3.99313, -79.20422], { draggable: true }).addTo(map);
+
+            // Inputs ocultos del formulario
+            var latInput = document.getElementById('id_ubicacion_lat');
+            var lngInput = document.getElementById('id_ubicacion_lng');
+
+            // Setear valores iniciales
+            latInput.value = -3.99313;
+            lngInput.value = -79.20422;
+
+            // Actualizar campos ocultos cuando se mueve el marcador
+            marker.on('dragend', function (event) {
+                var position = marker.getLatLng();
+                latInput.value = position.lat;
+                lngInput.value = position.lng;
+            });
+
+            // Actualizar marcador y campos cuando se hace click en otra zona
+            map.on('click', function (e) {
+                var lat = e.latlng.lat;
+                var lng = e.latlng.lng;
+
+                marker.setLatLng([lat, lng]);
+                latInput.value = lat;
+                lngInput.value = lng;
+            });
+        });
+    </script>
+</body>
+
+</html>

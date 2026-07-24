@@ -1,0 +1,136 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConectaStock | Red de Intermediación Comercial</title>
+    <!-- Se carga el CSS de la carpeta estática para mantener la separación estricta -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <!-- Cabecera Limpia -->
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo">Conecta<span class="color-accent">Stock</span></strong>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><a href="#proveedores">Proveedores</a></li>
+                    <li><a href="{% url 'login' %}">Iniciar Sesión</a></li>
+                    <li><a href="#registro-roles" class="btn btn-primary btn-sm">Registrarse</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Sección Hero: Estilo Branch (Fondo cálido, Full Bleed) -->
+        <section class="hero-section full-bleed" aria-labelledby="hero-heading">
+            <div class="container">
+                <div class="hero-content text-center">
+                    <h1 id="hero-heading" class="hero-title">Conecta tu Cadena de Suministro <span
+                            class="text-highlight">sin Fricciones</span></h1>
+                    <p class="hero-subtitle">La plataforma B2B definitiva que sincroniza el inventario de proveedores
+                        con la fuerza de ventas y las demandas de los compradores en tiempo real.</p>
+                    <div class="hero-actions justify-center">
+                        <a href="#registro-roles" class="btn btn-primary btn-large">Comenzar Ahora</a>
+                        <a href="#proveedores" class="btn btn-secondary btn-large">Ver Proveedores</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prueba Social: Fondo Blanco, Tarjetas Soft UI -->
+        <section id="proveedores" class="providers-section full-bleed" aria-labelledby="providers-heading">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2 id="providers-heading" class="section-title">Proveedores que ya confían en nosotros</h2>
+                    <p class="section-desc">Una red establecida de distribuidores mayoristas listos para conectar
+                        (Total: {{ numero_proveedores }}).</p>
+                </div>
+
+                <div class="providers-grid">
+                    <!-- Iteración dinámica sobre los proveedores registrados en base de datos -->
+                    {% for proveedor in proveedores %}
+                    <article class="provider-card">
+                        <div class="provider-logo" aria-hidden="true">
+                            {% if proveedor.logo %}
+                            <img src="{{ proveedor.logo.url }}" alt="{{ proveedor.nombre_empresa }}"
+                                style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                            {% else %}
+                            {{ proveedor.nombre_empresa|slice:":3"|upper }}
+                            {% endif %}
+                        </div>
+                        <h3>{{ proveedor.nombre_empresa }}</h3>
+                        <p class="help-text" style="color: var(--text-muted);">{{ proveedor.tipo }}</p>
+                    </article>
+                    {% empty %}
+                    <p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted);">
+                        Aún no hay proveedores registrados en la red.
+                    </p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Selección de Roles: Estilo Branch (Fondo cálido) -->
+        <section id="registro-roles" class="roles-section full-bleed" aria-labelledby="roles-heading">
+            <div class="container">
+                <div class="roles-header text-center">
+                    <h2 id="roles-heading" class="section-title">Regístrate ahora y transforma tu negocio</h2>
+                    <p class="section-desc">Selecciona tu perfil operativo para adaptar la plataforma a tus necesidades
+                        comerciales.</p>
+                </div>
+
+                <div class="roles-grid">
+                    <!-- Rol Proveedor enrutado a crear_proveedor -->
+                    <a href="{% url 'crear_proveedor' %}" class="role-card" aria-label="Registrarse como Proveedor">
+                        <div class="role-icon-wrapper">
+                            <span class="role-icon" aria-hidden="true">🏭</span>
+                        </div>
+                        <h3 class="role-title">Soy Proveedor</h3>
+                        <p class="role-desc">Quiero listar mi inventario, gestionar catálogos y conectar con una red
+                            verificada de vendedores.</p>
+                        <span class="role-action-link">Crear cuenta de proveedor</span>
+                    </a>
+
+                    <!-- Rol Vendedor enrutado a crear_vendedor -->
+                    <a href="{% url 'crear_vendedor' %}" class="role-card" aria-label="Registrarse como Vendedor">
+                        <div class="role-icon-wrapper">
+                            <span class="role-icon" aria-hidden="true">💼</span>
+                        </div>
+                        <h3 class="role-title">Soy Vendedor</h3>
+                        <p class="role-desc">Quiero intermediar productos, gestionar márgenes y coordinar envíos hacia
+                            mis compradores.</p>
+                        <span class="role-action-link">Crear cuenta de vendedor</span>
+                    </a>
+
+                    <!-- Rol Comprador (Tienda) enrutado a crear_tienda -->
+                    <a href="{% url 'crear_tienda' %}" class="role-card" aria-label="Registrarse como Comprador">
+                        <div class="role-icon-wrapper">
+                            <span class="role-icon" aria-hidden="true">🛒</span>
+                        </div>
+                        <h3 class="role-title">Soy Tienda / Comprador</h3>
+                        <p class="role-desc">Quiero acceder a catálogos, emitir órdenes de compra y solicitar un
+                            vendedor en mi sector.</p>
+                        <span class="role-action-link">Crear cuenta de tienda</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="b2b-footer full-bleed">
+        <div class="container">
+            <p>&copy; 2026 ConectaStock. Plataforma de Intermediación Comercial. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

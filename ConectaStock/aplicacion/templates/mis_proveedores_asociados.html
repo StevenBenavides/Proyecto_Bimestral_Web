@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Proveedores Asociados | ConectaStock</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo">
+                    <a href="{% url 'dashboard_vendedor' %}" class="text-decoration-none text-inherit">Conecta<span
+                            class="color-accent">Stock</span></a>
+                </strong>
+                <span class="header-badge">Mis Redes</span>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><strong class="text-primary">{{ vendedor.nombre }} {{ vendedor.apellido }}</strong></li>
+                    <li><a href="{% url 'dashboard_vendedor' %}" class="btn btn-secondary btn-sm">Volver al Panel</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <section class="container dashboard-section">
+
+            <div class="section-header text-center mb-lg">
+                <h1 class="font-1-8rem">Mis Proveedores</h1>
+                <p class="section-desc">Proveedores que han aprobado tu solicitud. Puedes ver su catálogo y generar pedidos para tus clientes.</p>
+            </div>
+
+            <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                {% for sol in solicitudes %}
+                <div class="form-card" style="margin: 0;">
+                    <div class="flex-between mb-sm">
+                        <h3 class="font-1-2rem">{{ sol.proveedor.nombre_empresa }}</h3>
+                        <span class="badge badge-success">Activo</span>
+                    </div>
+                    <p class="text-sm text-muted mb-md">RUC: {{ sol.proveedor.ruc }}</p>
+                    
+                    <div class="info-grid" style="grid-template-columns: 1fr; margin-bottom: 1.5rem;">
+                        <p class="text-sm"><strong>Comisión asignada:</strong> <span class="price-highlight">{{ sol.comision }}%</span></p>
+                    </div>
+
+                    <div class="text-center">
+                        <a href="{% url 'crear_pedido_vendedor' sol.proveedor.id %}" class="btn btn-primary w-full">Generar Pedido</a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center w-full" style="grid-column: 1 / -1;">
+                    <div class="info-box bg-light border-radius" style="padding: 2rem;">
+                        <p class="mb-sm">Aún no tienes proveedores asociados o tus solicitudes están pendientes.</p>
+                        <a href="{% url 'explorar_proveedores' %}" class="btn btn-primary">Buscar Proveedores</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        </section>
+    </main>
+
+</body>
+
+</html>

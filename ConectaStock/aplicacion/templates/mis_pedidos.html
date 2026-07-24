@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Pedidos | Dashboard Proveedor</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo">
+                    <a href="{% url 'dashboard_proveedor' %}" class="text-decoration-none text-inherit">Conecta<span
+                            class="color-accent">Stock</span></a>
+                </strong>
+                <span class="header-badge">Pedidos</span>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><strong class="text-primary">{{ proveedor.nombre_empresa }}</strong></li>
+                    <li><a href="{% url 'dashboard_proveedor' %}" class="btn btn-secondary btn-sm">Volver al Resumen</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <nav class="dashboard-nav">
+        <div class="container">
+            <ul>
+                <li><a href="{% url 'dashboard_proveedor' %}">Resumen</a></li>
+                <li><a href="{% url 'mis_productos' %}">Mi Catálogo</a></li>
+                <li><a href="{% url 'mis_vendedores' %}">Mis Vendedores</a></li>
+                <li><a href="{% url 'mis_pedidos' %}" class="active">Mis Pedidos</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="dashboard-main">
+        <section class="container dashboard-section">
+
+            <h1 class="font-1-8rem mb-lg">Trazabilidad de Pedidos</h1>
+
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Orden #</th>
+                            <th>Fecha</th>
+                            <th>Tienda (Cliente)</th>
+                            <th>Vendedor</th>
+                            <th>Monto Total</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pedido in pedidos %}
+                        <tr>
+                            <td class="font-mono">{{ pedido.numero_orden }}</td>
+                            <td>{{ pedido.fecha_creacion|date:"d M Y" }}</td>
+                            <td>{{ pedido.tienda.nombre_tienda }}</td>
+                            <td>{{ pedido.vendedor.nombre }} {{ pedido.vendedor.apellido }}</td>
+                            <td class="text-primary">${{ pedido.monto_total }}</td>
+                            <td>
+                                {% if pedido.estado == 'En proceso' %}
+                                <span class="badge badge-pending">En proceso</span>
+                                {% elif pedido.estado == 'Enviado' %}
+                                <span class="badge badge-info">Enviado</span>
+                                {% elif pedido.estado == 'En ruta' %}
+                                <span class="badge badge-route">En Ruta</span>
+                                {% elif pedido.estado == 'Entregado' %}
+                                <span class="badge badge-success">Entregado</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'gestionar_pedido' pedido.id %}"
+                                    class="btn btn-primary btn-sm">Gestionar</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center-empty">
+                                No hay pedidos registrados en tu empresa todavía.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+    </main>
+
+</body>
+
+</html>

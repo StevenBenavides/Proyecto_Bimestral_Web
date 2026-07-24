@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Productos | Dashboard Proveedor</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo">
+                    <a href="{% url 'dashboard_proveedor' %}" class="text-decoration-none text-inherit">Conecta<span
+                            class="color-accent">Stock</span></a>
+                </strong>
+                <span class="header-badge">Catálogo</span>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><strong class="text-primary">{{ proveedor.nombre_empresa }}</strong></li>
+                    <li><a href="{% url 'dashboard_proveedor' %}" class="btn btn-secondary btn-sm">Volver al Resumen</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <nav class="dashboard-nav">
+        <div class="container">
+            <ul>
+                <li><a href="{% url 'dashboard_proveedor' %}">Resumen</a></li>
+                <li><a href="{% url 'mis_productos' %}" class="active">Mi Catálogo</a></li>
+                <li><a href="{% url 'mis_vendedores' %}">Mis Vendedores</a></li>
+                <li><a href="{% url 'mis_pedidos' %}">Mis Pedidos</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="dashboard-main">
+        <section class="container dashboard-section">
+
+            <div class="flex-between mb-lg">
+                <h1 class="font-1-8rem">Gestión de Productos</h1>
+                <a href="{% url 'crear_producto' %}" class="btn btn-primary">Añadir Nuevo Producto</a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Imagen</th>
+                            <th>SKU</th>
+                            <th>Nombre</th>
+                            <th>Precio Unit.</th>
+                            <th>Stock Disponible</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for producto in productos %}
+                        <tr>
+                            <td class="td-img">
+                                {% if producto.imagen %}
+                                <img src="{{ producto.imagen.url }}" alt="img" class="img-avatar">
+                                {% else %}
+                                <div class="img-placeholder">📦</div>
+                                {% endif %}
+                            </td>
+                            <td class="font-mono">{{ producto.sku }}</td>
+                            <td>{{ producto.nombre }}</td>
+                            <td>${{ producto.precio_unitario }}</td>
+                            <td>
+                                {% if producto.stock_disponible > 0 %}
+                                <span class="badge badge-success">{{ producto.stock_disponible }}</span>
+                                {% else %}
+                                <span class="badge badge-pending">Sin Stock</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'editar_producto' producto.id %}" class="btn btn-secondary btn-sm"
+                                    style="margin-right: 8px;">Editar</a>
+                                <!-- Eliminar mediante POST por seguridad -->
+                                <form action="{% url 'eliminar_producto' producto.id %}" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-secondary btn-sm btn-danger-outline"
+                                        onclick="return confirm('¿Estás seguro de eliminar este producto?');">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center-empty">
+                                No tienes productos registrados en tu catálogo. ¡Empieza creando uno!
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+    </main>
+
+</body>
+
+</html>

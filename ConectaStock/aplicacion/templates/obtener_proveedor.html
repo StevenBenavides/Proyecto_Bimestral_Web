@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ proveedor.nombre_empresa }} | ConectaStock</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo"><a href="{% url 'index' %}"
+                        style="text-decoration: none; color: inherit;">Conecta<span
+                            class="color-accent">Stock</span></a></strong>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><a href="{% url 'index' %}">Volver al Inicio</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Perfil del Proveedor -->
+        <section class="hero-section full-bleed" style="padding-bottom: var(--space-xl);">
+            <div class="container text-center">
+                <div class="provider-logo"
+                    style="width: 120px; height: 120px; margin: 0 auto var(--space-md); font-size: 2rem;">
+                    {% if proveedor.logo %}
+                    <img src="{{ proveedor.logo.url }}" alt="{{ proveedor.nombre_empresa }}"
+                        style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                    {% else %}
+                    {{ proveedor.nombre_empresa|slice:":3"|upper }}
+                    {% endif %}
+                </div>
+                <h1 class="hero-title font-3rem mb-sm">{{
+                    proveedor.nombre_empresa }}</h1>
+
+                <p class="hero-subtitle mb-sm">
+                    {{ proveedor.tipo }}
+                    {% if proveedor.es_verificado %}
+                    <span class="text-success font-bold" style="margin-left: 10px;">✓ Verificado</span>
+                    {% endif %}
+                </p>
+                <p class="text-muted" style="max-width: 600px; margin: 0 auto;">{{ proveedor.descripcion }}</p>
+            </div>
+        </section>
+
+        <section class="providers-section full-bleed">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2 class="section-title">Catálogo de Productos</h2>
+                </div>
+
+                <div class="providers-grid">
+                    {% for producto in productos %}
+                    <article class="provider-card">
+                        <div
+                            style="width: 100%; height: 200px; background-color: var(--branch-warm-bg); border-radius: 8px; margin-bottom: var(--space-md); overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                            {% if producto.imagen %}
+                            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}"
+                                style="width:100%; height:100%; object-fit:cover;">
+                            {% else %}
+                            <span class="font-3rem text-muted">📦</span>
+                            {% endif %}
+                        </div>
+                        <h3 class="font-1-2rem mb-sm">{{ producto.nombre }}</h3>
+                        <p class="help-text text-muted mb-md">{{
+                            producto.descripcion|truncatewords:10 }}</p>
+
+                        <!-- NOTA: Como solicitaste, aquí NO mostramos el precio para ocultarlo de la tienda genérica o para simplificar -->
+                        <span
+                            style="display: inline-block; padding: 4px 12px; background-color: #f1f1f1; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">
+                            SKU: {{ producto.sku }}
+                        </span>
+                    </article>
+                    {% empty %}
+                    <p style="grid-column: 1 / -1; text-align: center;" class="text-muted">Este proveedor aún no
+                        tiene productos registrados.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="b2b-footer full-bleed">
+        <div class="container">
+            <p>&copy; 2026 NexusB2B. Plataforma de Intermediación Comercial. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

@@ -16,9 +16,7 @@ from appGiro.forms import *
 
 
 def landing_page(request):
-    """
-        Pantalla inicial de la aplicación.
-    """
+    
     if request.user.is_authenticated:
         if hasattr(request.user, 'proveedor'):
             return redirect('dashboard_proveedor')

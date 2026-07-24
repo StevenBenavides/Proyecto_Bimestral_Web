@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postularse a {{ proveedor.nombre_empresa }} | ConectaStock</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo"><a href="{% url 'dashboard_vendedor' %}"
+                        style="text-decoration: none; color: inherit;">Conecta<span
+                            class="color-accent">Stock</span></a></strong>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><a href="{% url 'explorar_proveedores' %}" class="btn btn-secondary btn-sm">Volver al Directorio</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="container dashboard-section">
+            <div class="form-card mx-auto" style="max-width: 600px;">
+                <div class="section-header text-center mb-lg">
+                    <h2 class="section-title font-1-5rem">Solicitud de Asociación</h2>
+                    <p class="section-desc">Estás a punto de solicitar ser vendedor para <strong>{{ proveedor.nombre_empresa }}</strong>.</p>
+                </div>
+
+                <div class="info-box bg-light border-radius mb-md" style="padding: 1.5rem; text-align: center;">
+                    {% if proveedor.logo %}
+                    <img src="{{ proveedor.logo.url }}" alt="Logo" class="img-avatar" style="width: 80px; height: 80px; margin-bottom: 1rem;">
+                    {% endif %}
+                    <h3 class="mb-sm">{{ proveedor.nombre_empresa }}</h3>
+                    <p class="text-sm text-muted mb-xs">RUC: {{ proveedor.ruc }}</p>
+                    <p class="text-sm">{{ proveedor.descripcion }}</p>
+                </div>
+
+                <form action="{% url 'enviar_solicitud' proveedor.id %}" method="post">
+                    {% csrf_token %}
+
+                    {% for field in formulario %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <p class="form-help-text">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <p class="errorlist">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="text-center mt-lg">
+                        <button type="submit" class="btn btn-primary w-full">Enviar Solicitud</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+</body>
+
+</html>

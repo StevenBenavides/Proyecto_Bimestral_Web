@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Producto | ConectaStock</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo"><a href="{% url 'dashboard_proveedor' %}"
+                        style="text-decoration: none; color: inherit;">Conecta<span
+                            class="color-accent">Stock</span></a></strong>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><a href="{% url 'mis_productos' %}">Volver a Mi Catálogo</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="form-section full-bleed">
+            <div class="container">
+                <div class="form-card">
+                    <div class="section-header text-center mb-lg">
+                        <h2 class="section-title font-2rem">
+                            {% if editando %}Editar Producto{% else %}Nuevo Producto{% endif %}
+                        </h2>
+                        <p class="section-desc font-1rem">
+                            {% if editando %}Actualiza la información de tu producto.{% else %}Añade un nuevo ítem a tu
+                            catálogo de inventario.{% endif %}
+                        </p>
+                    </div>
+
+                    <!-- Si editando es falso (Creando), va a crear_producto. Si editando existe, el form action se puede omitir para que haga POST a la misma URL actual -->
+                    <form action="" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        {% if formulario.non_field_errors %}
+                        <ul class="errorlist">
+                            {% for error in formulario.non_field_errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+
+                        {% for field in formulario %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <p class="form-help-text">{{ field.help_text }}</p>
+                            {% endif %}
+                            {% for error in field.errors %}
+                            <p class="errorlist">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+
+                        <div class="text-center mt-xl">
+                            <button type="submit" class="btn btn-primary btn-large w-100">
+                                {% if editando %}Guardar Cambios{% else %}Registrar Producto{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="b2b-footer full-bleed">
+        <div class="container">
+            <p>&copy; 2026 NexusB2B. Plataforma de Intermediación Comercial. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

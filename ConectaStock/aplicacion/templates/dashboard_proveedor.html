@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Proveedor | ConectaStock</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <!-- Header Principal -->
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo">
+                    <a href="{% url 'dashboard_proveedor' %}" class="text-decoration-none text-inherit">Conecta<span
+                            class="color-accent">Stock</span></a>
+                </strong>
+                <span class="header-badge">Panel de Proveedor</span>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><strong class="text-primary">{{ proveedor.nombre_empresa }}</strong></li>
+                    <li>
+                        <!-- Formulario seguro para cerrar sesión -->
+                        <form method="post" action="{% url 'logout' %}" class="form-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-secondary btn-sm btn-logout">Cerrar Sesión</button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Navegación de Módulos (Sub-Nav) -->
+    <nav class="dashboard-nav">
+        <div class="container">
+            <ul>
+                <li><a href="{% url 'dashboard_proveedor' %}" class="active">Resumen</a></li>
+                <li><a href="{% url 'mis_productos' %}">Mi Catálogo</a></li>
+                <li><a href="{% url 'mis_vendedores' %}">Mis Vendedores</a></li>
+                <li><a href="{% url 'mis_pedidos' %}">Mis Pedidos</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="dashboard-main">
+        <section class="container dashboard-section">
+            <div class="section-header mb-lg">
+                <h1 class="font-2rem">Bienvenido, {{ proveedor.nombre_propietario }}</h1>
+                <p class="text-muted">Aquí tienes un resumen rápido de tu operativa en la red.</p>
+            </div>
+
+            <!-- Grid de Métricas -->
+            <div class="metric-grid">
+
+                <!-- Tarjeta de Productos -->
+                <div class="form-card metric-card">
+                    <h3 class="metric-title">Productos en Catálogo</h3>
+                    <p class="metric-value primary">{{ num_productos }}</p>
+                    <a href="{% url 'mis_productos' %}" class="btn btn-secondary btn-sm mt-md w-100">Gestionar</a>
+                </div>
+
+                <!-- Tarjeta de Pedidos Pendientes -->
+                <div class="form-card metric-card">
+                    <h3 class="metric-title">Pedidos Pendientes</h3>
+                    <p class="metric-value warning">{{ num_pedidos }}</p>
+                    <a href="{% url 'mis_pedidos' %}" class="btn btn-secondary btn-sm mt-md w-100">Revisar</a>
+                </div>
+
+                <!-- Tarjeta de Vendedores Aprobados -->
+                <div class="form-card metric-card">
+                    <h3 class="metric-title">Vendedores Activos</h3>
+                    <p class="metric-value success">{{ num_vendedores }}</p>
+                    <a href="{% url 'mis_vendedores' %}" class="btn btn-secondary btn-sm mt-md w-100">Ver Red</a>
+                </div>
+
+                <!-- Tarjeta de Solicitudes -->
+                <div class="form-card metric-card {% if num_solicitudes > 0 %}active-border{% endif %}">
+                    <h3 class="metric-title">Nuevas Solicitudes</h3>
+                    <p class="metric-value info">{{ num_solicitudes }}</p>
+                    <a href="{% url 'mis_vendedores' %}"
+                        class="btn {% if num_solicitudes > 0 %}btn-primary{% else %}btn-secondary{% endif %} btn-sm mt-md w-100">Procesar</a>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <footer class="b2b-footer full-bleed footer-compact">
+        <div class="container">
+            <p>&copy; 2026 NexusB2B.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

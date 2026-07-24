@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprobar Solicitud | Dashboard Proveedor</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo"><a href="{% url 'dashboard_proveedor' %}"
+                        style="text-decoration: none; color: inherit;">Conecta<span
+                            class="color-accent">Stock</span></a></strong>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><a href="{% url 'mis_vendedores' %}" class="btn btn-secondary btn-sm">Volver a Vendedores</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="container dashboard-section">
+            <div class="form-card">
+                <div class="section-header text-center mb-lg">
+                    <h2 class="section-title font-1-5rem">Aprobar a {{ solicitud.vendedor.nombre }} {{ solicitud.vendedor.apellido }}</h2>
+                    <p class="section-desc">Revisa el perfil del vendedor y establece su comisión de ventas.</p>
+                </div>
+
+                <div class="info-box">
+                    <p><strong>Cédula:</strong> {{ solicitud.vendedor.cedula }}</p>
+                    <p><strong>Ciudad / Sector:</strong> {{ solicitud.vendedor.ciudad }} / {{ solicitud.vendedor.sector }}</p>
+                    <p><strong>Motivación:</strong></p>
+                    <blockquote class="blockquote-custom">
+                        "{{ solicitud.descripcion_ganas }}"
+                    </blockquote>
+                </div>
+
+                <form action="{% url 'aprobar_solicitud' solicitud.id %}" method="post">
+                    {% csrf_token %}
+
+                    {% for field in formulario %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <p class="form-help-text">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <p class="errorlist">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="text-center mt-lg">
+                        <button type="submit" class="btn btn-primary btn-large w-100">Aprobar Vendedor</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+</body>
+
+</html>

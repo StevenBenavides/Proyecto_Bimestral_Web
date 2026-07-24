@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Vendedor | ConectaStock</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo">
+                    <a href="{% url 'dashboard_vendedor' %}" class="text-decoration-none text-inherit">Conecta<span
+                            class="color-accent">Stock</span></a>
+                </strong>
+                <span class="header-badge">Panel de Vendedor</span>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><strong class="text-primary">{{ vendedor.nombre }} {{ vendedor.apellido }}</strong></li>
+                    <li>
+                        <form method="post" action="{% url 'logout' %}" class="form-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-secondary btn-sm btn-logout">Cerrar Sesión</button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="container dashboard-section">
+            <h1 class="font-1-8rem mb-lg">Hola, {{ vendedor.nombre }}</h1>
+
+            <div class="stats-grid mb-xl">
+                <div class="stat-card">
+                    <h3 class="stat-title">Proveedores Asociados</h3>
+                    <p class="stat-value">{{ num_proveedores }}</p>
+                </div>
+                <div class="stat-card">
+                    <h3 class="stat-title">Pedidos Gestionados</h3>
+                    <p class="stat-value">{{ num_pedidos }}</p>
+                </div>
+                <div class="stat-card">
+                    <h3 class="stat-title">Comisiones Pendientes</h3>
+                    <p class="stat-value text-success">${{ comisiones_pendientes|floatformat:2 }}</p>
+                </div>
+            </div>
+
+            <h2 class="font-1-4rem mb-md">Módulos Rápidos</h2>
+            <div class="info-grid">
+                <div class="form-card text-center" style="max-width: none;">
+                    <h3 class="mb-sm">Red de Proveedores</h3>
+                    <p class="mb-md section-desc">Busca nuevos proveedores o accede al catálogo de los que ya te han aprobado.</p>
+                    <div class="flex-center">
+                        <a href="{% url 'explorar_proveedores' %}" class="btn btn-primary" style="margin-right: 10px;">Explorar Directorio</a>
+                        <a href="{% url 'mis_proveedores_asociados' %}" class="btn btn-secondary">Mis Proveedores</a>
+                    </div>
+                </div>
+                <div class="form-card text-center" style="max-width: none;">
+                    <h3 class="mb-sm">Mis Pedidos</h3>
+                    <p class="mb-md section-desc">Revisa el historial de pedidos y su estado de entrega a las tiendas.</p>
+                    <a href="{% url 'historial_pedidos_vendedor' %}" class="btn btn-primary">Ver Historial</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+
+</html>

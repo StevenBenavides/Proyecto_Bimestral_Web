@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Pedido | ConectaStock</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo"><a href="{% url 'dashboard_vendedor' %}"
+                        style="text-decoration: none; color: inherit;">Conecta<span
+                            class="color-accent">Stock</span></a></strong>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><a href="{% url 'mis_proveedores_asociados' %}" class="btn btn-secondary btn-sm">Cancelar Pedido</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="container dashboard-section">
+            
+            <div class="form-card mx-auto" style="max-width: 900px; margin-bottom: 2rem;">
+                <div class="section-header text-center mb-lg">
+                    <h2 class="section-title font-1-5rem">Generar Pedido para {{ proveedor.nombre_empresa }}</h2>
+                    <p class="section-desc">Selecciona la tienda cliente y confirma los detalles de facturación.</p>
+                </div>
+
+                <form action="{% url 'crear_pedido_vendedor' proveedor.id %}" method="post" id="pedido-form">
+                    {% csrf_token %}
+
+                    <h3 class="mb-sm">Datos de Cabecera</h3>
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        {% for field in formulario %}
+                        <div class="form-group" {% if forloop.last %}style="grid-column: 1 / -1;"{% endif %}>
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <p class="form-help-text">{{ field.help_text }}</p>
+                            {% endif %}
+                            {% for error in field.errors %}
+                            <p class="errorlist">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="text-right">
+                        <!-- Botón principal para enviar todo el formulario post -->
+                        <button type="submit" class="btn btn-primary btn-lg">Generar Pedido Definitivo</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Buscador del catálogo (Formulario GET) -->
+            <div class="flex-between mb-md align-center">
+                <h3 class="font-1-4rem">Catálogo de Productos</h3>
+                <form method="get" action="" class="form-inline" style="display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="text" name="q" class="form-control" placeholder="Buscar por nombre..." value="{{ busqueda }}" style="width: 250px;">
+                    <button type="submit" class="btn btn-secondary">Filtrar</button>
+                    {% if busqueda %}
+                        <a href="{% url 'crear_pedido_vendedor' proveedor.id %}" class="text-muted text-sm text-decoration-none">Limpiar</a>
+                    {% endif %}
+                </form>
+            </div>
+
+            <!-- Catálogo tipo Cuadrícula (Alibaba) -->
+            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem;">
+                {% for producto in productos %}
+                <div class="form-card" style="margin: 0; padding: 1rem; text-align: center;">
+                    
+                    <div style="height: 120px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                        {% if producto.imagen %}
+                            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                        {% else %}
+                            <div class="img-placeholder" style="width: 80px; height: 80px; font-size: 2rem;">📦</div>
+                        {% endif %}
+                    </div>
+                    
+                    <p class="text-sm text-muted mb-xs">{{ producto.sku }}</p>
+                    <h4 class="mb-xs" style="font-size: 1rem; line-height: 1.2; height: 2.4em; overflow: hidden;">{{ producto.nombre }}</h4>
+                    <p class="price-highlight mb-sm font-1-2rem">${{ producto.precio_unitario }}</p>
+                    
+                    <p class="text-sm mb-md">
+                        <span class="badge badge-success">{{ producto.stock_disponible }} en stock</span>
+                    </p>
+                    
+                    <div style="display: flex; gap: 0.5rem;">
+                        <!-- Al igual que en la tabla anterior, esto es referencial sin JS. 
+                             Normalmente usaríamos un formset, pero para visualización cumple el formato solicitado. -->
+                        <input type="number" form="pedido-form" name="cantidad_prod_{{ producto.id }}" min="0" max="{{ producto.stock_disponible }}" class="form-control" placeholder="Cant." style="flex: 1;">
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center w-full" style="grid-column: 1 / -1; padding: 3rem;">
+                    <p class="text-muted">No se encontraron productos disponibles{% if busqueda %} para la búsqueda "{{ busqueda }}"{% endif %}.</p>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </main>
+
+</body>
+
+</html>
