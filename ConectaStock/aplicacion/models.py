@@ -14,7 +14,7 @@ class Proveedor(models.Model):
         ('Mayorista', 'Mayorista'),
         ('Minorista', 'Minorista'),
     )
-    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil_proveedor', null=True)
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil_proveedor')
     nombre_empresa = models.CharField(max_length=100)
     ruc = models.CharField(max_length=13, unique=True)
     nombre_propietario = models.CharField(max_length=50)
@@ -38,7 +38,7 @@ class Vendedor(models.Model):
         ('Este', 'Este'),
         ('Oeste', 'Oeste'),
     )
-    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil_vendedor', null=True)
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil_vendedor')
     cedula = models.CharField(max_length=10, unique=True)
     ruc_rice = models.CharField(max_length=13, blank=True, null=True)
     nombre = models.CharField(max_length=50)
@@ -75,7 +75,7 @@ class SolicitudVendedor(models.Model):
         return f"Solicitud de {self.vendedor} a {self.proveedor}"
 
 class Tienda(models.Model):
-    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil_tienda', null=True)
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil_tienda')
     cedula = models.CharField(max_length=10)
     ruc_rice = models.CharField(max_length=13, blank=True, null=True)
     nombre_tienda = models.CharField(max_length=100)

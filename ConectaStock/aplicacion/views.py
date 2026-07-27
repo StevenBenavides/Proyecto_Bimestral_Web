@@ -188,13 +188,17 @@ def gestionar_pedido(request, id):
     if request.method == 'POST':
         formulario = GestionarPedidoForm(request.POST, instance=pedido)
         if formulario.is_valid():
-            # Aqui podríamos agregar lógica adicional para manejar el estado del pedido, notificaciones, etc.
+            # Aqui podríamos agregar lógica adicional para manejar 
+            # el estado del pedido, notificaciones, etc.
             formulario.save()
             return redirect('mis_pedidos')
     else:
         formulario = GestionarPedidoForm(instance=pedido)
         
     return render(request, 'gestionar_pedido.html', {'formulario': formulario, 'pedido': pedido})
+
+
+
 
 # ==============================================================================
 # VISTAS DEL VENDEDOR
@@ -293,7 +297,7 @@ def crear_pedido_vendedor(request, proveedor_id):
             pedido.estado = 'En proceso'
             pedido.save()
             
-            # Aquí idealmente procesaríamos los detalles del pedido (productos)
+            # Aquí procesaríamos los detalles del pedido (productos)
             # Por ahora, simplemente lo guardamos y redirigimos
             return redirect('historial_pedidos_vendedor')
     else:

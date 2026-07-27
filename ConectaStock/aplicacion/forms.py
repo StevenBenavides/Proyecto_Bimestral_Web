@@ -5,11 +5,14 @@ from django.contrib.auth.models import User
 
 from aplicacion.models import Proveedor, Vendedor, Tienda, Producto, SolicitudVendedor, Pedido
 
+
 class ProveedorForm(ModelForm):
+    # Campos adicionales para el registro de usuario
     username = forms.CharField(max_length=150, required=True, label="Nombre de Usuario para el login")
     password = forms.CharField(widget=forms.PasswordInput, required=True, label="Contraseña")
 
     class Meta:
+        # Definimos el modelo y los campos que se usarán en el formulario
         model = Proveedor
         fields = ['username', 'password', 'nombre_empresa', 'ruc', 'nombre_propietario', 'apellido_propietario', 'correo', 'tipo', 'descripcion', 'logo']
         labels = {
@@ -32,7 +35,7 @@ class ProveedorForm(ModelForm):
     def save(self, commit=True):
         # Obtenemos la instancia sin guardarla todavía
         proveedor = super().save(commit=False)
-        # Creamos el usuario de Django
+        # Creamos el usuario de Django si no existe y lo asociamos al proveedor
         user = User.objects.create_user(
             username=self.cleaned_data['username'],
             password=self.cleaned_data['password'],
