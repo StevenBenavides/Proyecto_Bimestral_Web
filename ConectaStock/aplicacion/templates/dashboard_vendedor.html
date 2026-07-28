@@ -183,7 +183,12 @@
                         </div>
                         <div class="profile-form-group">
                             <label class="profile-form-label">Sector Preferido</label>
-                            <input type="text" name="sector" value="{{ formulario.sector.value|default:'' }}" class="profile-form-input" required>
+                            <select name="sector" class="profile-form-input" required>
+                                <option value="Norte" {% if formulario.sector.value == 'Norte' %}selected{% endif %}>Norte</option>
+                                <option value="Sur" {% if formulario.sector.value == 'Sur' %}selected{% endif %}>Sur</option>
+                                <option value="Este" {% if formulario.sector.value == 'Este' %}selected{% endif %}>Este</option>
+                                <option value="Oeste" {% if formulario.sector.value == 'Oeste' %}selected{% endif %}>Oeste</option>
+                            </select>
                         </div>
                     </div>
                     
