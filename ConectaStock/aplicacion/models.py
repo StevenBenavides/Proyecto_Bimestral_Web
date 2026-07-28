@@ -173,7 +173,7 @@ class Pedido(models.Model):
     numero_transferencia = models.CharField(max_length=50, null=True, blank=True)
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='En proceso')
     fecha_estimada_entrega = models.DateField(null=True, blank=True)
-    numero_contacto = models.CharField(max_length=15, null=True, blank=True)
+    numero_contacto = models.CharField(max_length=10, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         # Genera un numero de pedido unico si no existe

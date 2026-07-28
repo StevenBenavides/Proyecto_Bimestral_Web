@@ -234,8 +234,17 @@ class GestionarPedidoForm(ModelForm):
         }
         widgets = {
             'fecha_estimada_entrega': forms.DateInput(format=('%Y-%m-%d'), attrs={'class':'form-control', 'type': 'date'}),
+            'numero_contacto': forms.TextInput(attrs={'class':'form-control', 'pattern': '[0-9]{10}', 'title': 'El número de contacto debe tener exactamente 10 dígitos numéricos'}),
         }
 
+    def clean_numero_contacto(self):
+        valor = self.cleaned_data.get('numero_contacto')
+        if valor:
+            if not valor.isdigit():
+                raise forms.ValidationError("El número de contacto debe contener solo números.")
+            if len(valor) != 10:
+                raise forms.ValidationError("El número de contacto debe tener exactamente 10 dígitos.")
+        return valor
 
 class EditarTiendaForm(ModelForm):
     class Meta:

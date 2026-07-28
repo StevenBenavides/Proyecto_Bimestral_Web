@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trazabilidad del Pedido - ConectaStock</title>
+    <title>Estado del Pedido - ConectaStock</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
 </head>
@@ -39,9 +39,8 @@
 
             <div class="form-card mx-auto form-card-wide">
                 <div class="section-header text-center mb-lg">
-                    <h2 class="section-title font-2rem">Trazabilidad del Pedido</h2>
-                    <p class="section-desc">Orden #<span class="font-mono text-primary">{{ pedido.numero_pedido
-                            }}</span></p>
+                    <h2 class="section-title font-2rem">Estado del Pedido</h2>
+                    <p class="section-desc">Orden #<span class="font-mono text-primary">{{ pedido.numero_pedido }}</span></p>
                 </div>
 
                 <!-- Timeline Visual -->
