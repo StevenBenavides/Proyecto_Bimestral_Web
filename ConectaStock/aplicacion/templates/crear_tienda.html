@@ -18,9 +18,13 @@
     <header class="b2b-header">
         <div class="container header-layout">
             <div class="logo-area">
-                <strong class="brand-logo"><a href="{% url 'index' %}"
-                        style="text-decoration: none; color: inherit;">Conecta<span
-                            class="color-accent">Stock</span></a></strong>
+                <strong class="brand-logo" style="display: flex; align-items: center;">
+    <a href="{% url 'index' %}"
+                        style="text-decoration: none; color: inherit;">
+        <img src="{% static 'images/iso_1.png' %}" alt="Logo" style="height: 36px; margin-right: 12px; border-radius: 4px;">
+        Conecta<span class="color-accent">Stock</span>
+    </a>
+</strong>
             </div>
             <nav aria-label="Navegación principal">
                 <ul class="nav-links">
@@ -101,8 +105,8 @@
             // Inicializar mapa centrado en una ubicación por defecto (Ej: Loja, Ecuador)
             var map = L.map('map').setView([-3.99313, -79.20422], 13);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
             }).addTo(map);
 
             // Marcador arrastrable

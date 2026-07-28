@@ -1,0 +1,147 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Tienda | Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+
+<body>
+
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo" style="display: flex; align-items: center;">
+                    <a href="{% url 'dashboard_tienda' %}" class="text-decoration-none text-inherit">
+                        <img src="{% static 'images/iso_1.png' %}" alt="Logo" style="height: 36px; margin-right: 12px; border-radius: 4px;">
+                        Conecta<span class="color-accent">Stock</span>
+                    </a>
+                </strong>
+                <span class="header-badge">Comprador</span>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><strong class="text-primary">{{ tienda.nombre_tienda }}</strong></li>
+                    <li>
+                        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-logout">Cerrar Sesión</button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <nav class="dashboard-nav">
+        <div class="container">
+            <ul>
+                <li><a href="{% url 'dashboard_tienda' %}" class="active">Mi Perfil</a></li>
+                <li><a href="{% url 'proveedores_tienda' %}">Explorar Proveedores</a></li>
+                <li><a href="{% url 'mis_pedidos_tienda' %}">Mis Pedidos</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="dashboard-main">
+        <section class="container dashboard-section">
+            <h1 class="font-1-8rem mb-lg">Perfil de la Tienda</h1>
+
+            <div class="info-grid">
+                <!-- Información bloqueada -->
+                <div class="form-card form-card-full">
+                    <h3 class="mb-sm text-muted">Información Fija</h3>
+                    <p class="mb-sm"><strong>Propietario:</strong> {{ tienda.nombre_propietario }} {{ tienda.apellido_propietario }}</p>
+                    <p class="mb-sm"><strong>Cédula:</strong> {{ tienda.cedula }}</p>
+                    <p class="mb-sm"><strong>RUC/RICE:</strong> {{ tienda.ruc_rice|default:"N/A" }}</p>
+                    <p class="mb-sm"><strong>Correo:</strong> {{ tienda.correo }}</p>
+                    <p class="mb-sm"><strong>Teléfono:</strong> {{ tienda.telefono }}</p>
+                    <p class="mt-md text-muted font-sm"><i>* Para modificar esta información debes comunicarte con soporte.</i></p>
+                </div>
+
+                <!-- Formulario de edición permitida -->
+                <div class="form-card form-card-full">
+                    <h3 class="mb-sm">Editar Ubicación y Nombre</h3>
+                    
+                    <form action="{% url 'dashboard_tienda' %}" method="post">
+                        {% csrf_token %}
+
+                        <!-- Nombre -->
+                        <div class="form-group">
+                            <label for="{{ formulario.nombre_tienda.id_for_label }}">{{ formulario.nombre_tienda.label }}</label>
+                            {{ formulario.nombre_tienda }}
+                            {% for error in formulario.nombre_tienda.errors %}
+                                <p class="errorlist">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Coordenadas ocultas -->
+                        {{ formulario.ubicacion_lat }}
+                        {{ formulario.ubicacion_lng }}
+
+                        <!-- Mapa -->
+                        <div class="form-group">
+                            <label>Ubicación de la tienda en el Mapa</label>
+                            <p class="form-help-text mb-sm">Haz clic en el mapa o arrastra el marcador para actualizar tu ubicación exacta.</p>
+                            <div id="map" style="height: 300px; border-radius: 8px;"></div>
+                        </div>
+
+                        <div class="text-center mt-md">
+                            <button type="submit" class="btn btn-primary w-100">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <footer class="b2b-footer full-bleed footer-compact">
+        <div class="container">
+            <p>&copy; 2026 ConectaStock.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts de Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Inicializamos el mapa con las coordenadas actuales de la tienda
+            var initialLat = parseFloat("{{ tienda.ubicacion_lat }}".replace(',', '.')) || -2.1894;
+            var initialLng = parseFloat("{{ tienda.ubicacion_lng }}".replace(',', '.')) || -79.8891;
+            
+            var map = L.map('map').setView([initialLat, initialLng], 14);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            }).addTo(map);
+
+            var marker = L.marker([initialLat, initialLng], { draggable: true }).addTo(map);
+
+            var latInput = document.getElementById('id_ubicacion_lat');
+            var lngInput = document.getElementById('id_ubicacion_lng');
+
+            function updateCoordinates(lat, lng) {
+                latInput.value = lat.toFixed(6);
+                lngInput.value = lng.toFixed(6);
+            }
+
+            // Evento al arrastrar el marcador
+            marker.on('dragend', function (e) {
+                var pos = marker.getLatLng();
+                updateCoordinates(pos.lat, pos.lng);
+            });
+
+            // Evento al hacer clic en el mapa
+            map.on('click', function (e) {
+                marker.setLatLng(e.latlng);
+                updateCoordinates(e.latlng.lat, e.latlng.lng);
+            });
+        });
+    </script>
+</body>
+</html>

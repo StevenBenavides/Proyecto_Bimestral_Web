@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proveedores Disponibles | Mi Tienda</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo" style="display: flex; align-items: center;">
+                    <a href="{% url 'dashboard_tienda' %}" class="text-decoration-none text-inherit">
+                        <img src="{% static 'images/iso_1.png' %}" alt="Logo" style="height: 36px; margin-right: 12px; border-radius: 4px;">
+                        Conecta<span class="color-accent">Stock</span>
+                    </a>
+                </strong>
+                <span class="header-badge">Comprador</span>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><strong class="text-primary">{{ tienda.nombre_tienda }}</strong></li>
+                    <li><a href="{% url 'dashboard_tienda' %}" class="btn btn-secondary btn-sm">Volver al Perfil</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <nav class="dashboard-nav">
+        <div class="container">
+            <ul>
+                <li><a href="{% url 'dashboard_tienda' %}">Mi Perfil</a></li>
+                <li><a href="{% url 'proveedores_tienda' %}" class="active">Explorar Proveedores</a></li>
+                <li><a href="{% url 'mis_pedidos_tienda' %}">Mis Pedidos</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="dashboard-main">
+        <section class="container dashboard-section">
+            <div class="section-header text-center mb-xl">
+                <h1 class="font-1-8rem">Red de Distribuidores</h1>
+                <p class="text-muted">Explora nuestra red de mayoristas verificados. Selecciona un proveedor para ver su catálogo de productos disponible.</p>
+            </div>
+
+            <div class="providers-grid">
+                {% for proveedor in proveedores %}
+                <article class="provider-card">
+                    <div class="provider-logo">
+                        {% if proveedor.logo %}
+                            <img src="{{ proveedor.logo.url }}" alt="{{ proveedor.nombre_empresa }}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                        {% else %}
+                            {{ proveedor.nombre_empresa|slice:":3"|upper }}
+                        {% endif %}
+                    </div>
+                    <h3 class="mb-sm">{{ proveedor.nombre_empresa }}</h3>
+                    <p class="text-muted mb-md">{{ proveedor.tipo }}</p>
+                    <a href="{% url 'catalogo_proveedor_tienda' proveedor.id %}" class="btn btn-primary btn-sm w-100">Ver Catálogo</a>
+                </article>
+                {% empty %}
+                <div class="form-card text-center" style="grid-column: 1 / -1; max-width: none;">
+                    <p class="text-muted">Aún no hay proveedores verificados que acepten solicitudes.</p>
+                </div>
+                {% endfor %}
+            </div>
+
+        </section>
+    </main>
+
+    <footer class="b2b-footer full-bleed footer-compact">
+        <div class="container">
+            <p>&copy; 2026 ConectaStock.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

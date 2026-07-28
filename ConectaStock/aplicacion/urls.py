@@ -19,6 +19,10 @@ urlpatterns = [
     path('dashboard/proveedor/productos/eliminar/<int:id>/', views.eliminar_producto, name='eliminar_producto'),
     path('dashboard/proveedor/vendedores/', views.mis_vendedores, name='mis_vendedores'),
     path('dashboard/proveedor/vendedores/aprobar/<int:id>/', views.aprobar_solicitud, name='aprobar_solicitud'),
+    path('dashboard/proveedor/vendedores/rechazar/<int:id>/', views.rechazar_solicitud, name='rechazar_solicitud'),
+    path('dashboard/proveedor/vendedores/editar-comision/<int:id>/', views.editar_comision, name='editar_comision'),
+    path('dashboard/proveedor/vendedores/eliminar/<int:id>/', views.eliminar_vendedor, name='eliminar_vendedor'),
+    path('dashboard/proveedor/vendedores/toggle-recepcion/', views.toggle_recepcion_solicitudes, name='toggle_recepcion_solicitudes'),
     path('dashboard/proveedor/pedidos/', views.mis_pedidos, name='mis_pedidos'),
     path('dashboard/proveedor/pedidos/gestionar/<int:id>/', views.gestionar_pedido, name='gestionar_pedido'),
     
@@ -30,4 +34,13 @@ urlpatterns = [
     path('dashboard/vendedor/pedidos/nuevo/<int:proveedor_id>/', views.crear_pedido_vendedor, name='crear_pedido_vendedor'),
     path('dashboard/vendedor/pedidos/historial/', views.historial_pedidos_vendedor, name='historial_pedidos_vendedor'),
     path('dashboard/vendedor/notificaciones/', views.notificaciones_vendedor, name='notificaciones_vendedor'),
+    path('dashboard/vendedor/notificaciones/atender/<int:id>/', views.atender_solicitud_visita, name='atender_solicitud_visita'),
+    
+    # Rutas del Dashboard de Tienda
+    path('dashboard/tienda/', views.dashboard_tienda, name='dashboard_tienda'),
+    path('dashboard/tienda/proveedores/', views.proveedores_tienda, name='proveedores_tienda'),
+    path('dashboard/tienda/proveedores/<int:proveedor_id>/catalogo/', views.catalogo_proveedor_tienda, name='catalogo_proveedor_tienda'),
+    path('dashboard/tienda/proveedores/<int:proveedor_id>/contactar/', views.solicitar_visita_vendedor, name='solicitar_visita_vendedor'),
+    path('dashboard/tienda/pedidos/', views.mis_pedidos_tienda, name='mis_pedidos_tienda'),
+    path('dashboard/tienda/pedidos/<int:pedido_id>/', views.detalle_pedido_tienda, name='detalle_pedido_tienda'),
 ]

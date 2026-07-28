@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.db.models import Count
+from django.contrib import messages
 from aplicacion.models import *
 from aplicacion.forms import *
 
@@ -10,7 +12,8 @@ def index(request):
             return redirect('dashboard_proveedor')
         if hasattr(request.user, 'perfil_vendedor'):
             return redirect('dashboard_vendedor')
-        # Aquí se añadirá la de tienda luego
+        if hasattr(request.user, 'perfil_tienda'):
+            return redirect('dashboard_tienda')
 
     proveedores = Proveedor.objects.all()
     informacion_template = {'proveedores': proveedores, 'numero_proveedores': len(proveedores)}
@@ -67,6 +70,8 @@ def dashboard_proveedor(request):
         'num_pedidos': Pedido.objects.filter(proveedor=proveedor, estado='En proceso').count(),
         'num_vendedores': proveedor.solicitudes_vendedores.filter(estado='Aprobado').count(),
         'num_solicitudes': proveedor.solicitudes_vendedores.filter(estado='Pendiente').count(),
+        'total_ventas': proveedor.get_total_ventas(),
+        'total_comisiones': proveedor.get_total_comisiones(),
     }
     return render(request, 'dashboard_proveedor.html', context)
 
@@ -168,6 +173,62 @@ def aprobar_solicitud(request, id):
 
 
 @login_required
+@require_POST
+def rechazar_solicitud(request, id):
+    if not hasattr(request.user, 'perfil_proveedor'):
+        return redirect('index')
+        
+    proveedor = request.user.perfil_proveedor
+    solicitud = get_object_or_404(SolicitudVendedor, pk=id, proveedor=proveedor, estado='Pendiente')
+    solicitud.estado = 'Rechazado'
+    solicitud.save()
+    return redirect('mis_vendedores')
+
+
+@login_required
+@require_POST
+def toggle_recepcion_solicitudes(request):
+    if not hasattr(request.user, 'perfil_proveedor'):
+        return redirect('index')
+        
+    proveedor = request.user.perfil_proveedor
+    proveedor.acepta_solicitudes = not proveedor.acepta_solicitudes
+    proveedor.save()
+    return redirect('mis_vendedores')
+
+
+@login_required
+def editar_comision(request, id):
+    if not hasattr(request.user, 'perfil_proveedor'):
+        return redirect('index')
+        
+    proveedor = request.user.perfil_proveedor
+    solicitud = get_object_or_404(SolicitudVendedor, pk=id, proveedor=proveedor, estado='Aprobado')
+    
+    if request.method == 'POST':
+        formulario = AprobarSolicitudForm(request.POST, instance=solicitud)
+        if formulario.is_valid():
+            formulario.save()
+            return redirect('mis_vendedores')
+    else:
+        formulario = AprobarSolicitudForm(instance=solicitud)
+    
+    return render(request, 'aprobar_solicitud.html', {'formulario': formulario, 'solicitud': solicitud, 'editando': True})
+
+
+@login_required
+@require_POST
+def eliminar_vendedor(request, id):
+    if not hasattr(request.user, 'perfil_proveedor'):
+        return redirect('index')
+        
+    proveedor = request.user.perfil_proveedor
+    solicitud = get_object_or_404(SolicitudVendedor, pk=id, proveedor=proveedor)
+    solicitud.delete()
+    return redirect('mis_vendedores')
+
+
+@login_required
 def mis_pedidos(request):
     if not hasattr(request.user, 'perfil_proveedor'):
         return redirect('index')
@@ -210,17 +271,41 @@ def dashboard_vendedor(request):
         return redirect('index')
     
     vendedor = request.user.perfil_vendedor
+    
+    if request.method == 'POST':
+        formulario = EditarVendedorForm(request.POST, instance=vendedor)
+        if formulario.is_valid():
+            formulario.save()
+            return redirect('dashboard_vendedor')
+    else:
+        formulario = EditarVendedorForm(instance=vendedor)
+    
     # Pedidos generados por este vendedor
     pedidos = Pedido.objects.filter(vendedor=vendedor)
     # Solicitudes de visita de las tiendas (Notificaciones)
     num_notificaciones = vendedor.notificaciones_visita.filter(estado='Pendiente').count()
+    postulaciones = vendedor.solicitudes.all().order_by('-id')
+    # Calcular comisiones pendientes con el porcentaje real
+    pedidos_pendientes = pedidos.exclude(estado='Entregado')
+    comisiones_pendientes = 0
+    for p in pedidos_pendientes:
+        sol = vendedor.solicitudes.filter(proveedor=p.proveedor).first()
+        if sol and sol.comision:
+            comisiones_pendientes += p.calcular_total() * (sol.comision / 100)
+            
+    # Proveedores aprobados para el pedido rapido
+    proveedores_aprobados = [sol.proveedor for sol in vendedor.solicitudes.filter(estado='Aprobado')]
     
     context = {
         'vendedor': vendedor,
         'num_pedidos': pedidos.count(),
         'num_proveedores': vendedor.solicitudes.filter(estado='Aprobado').count(),
         'num_notificaciones': num_notificaciones,
-        'comisiones_pendientes': sum([p.calcular_total() * 0.05 for p in pedidos if p.estado != 'Entregado']),
+        'comisiones_pendientes': comisiones_pendientes,
+        'ganancias_totales': vendedor.get_total_ganancias(),
+        'postulaciones': postulaciones,
+        'proveedores_aprobados': proveedores_aprobados,
+        'formulario': formulario,
     }
     return render(request, 'dashboard_vendedor.html', context)
 
@@ -233,7 +318,7 @@ def explorar_proveedores(request):
     vendedor = request.user.perfil_vendedor
     # Proveedores a los que aún no ha enviado solicitud
     proveedores_solicitados = vendedor.solicitudes.values_list('proveedor_id', flat=True)
-    proveedores_disponibles = Proveedor.objects.exclude(id__in=proveedores_solicitados).filter(es_verificado=True)
+    proveedores_disponibles = Proveedor.objects.exclude(id__in=proveedores_solicitados).filter(es_verificado=True, acepta_solicitudes=True)
     
     return render(request, 'explorar_proveedores.html', {'proveedores': proveedores_disponibles, 'vendedor': vendedor})
 
@@ -283,7 +368,7 @@ def crear_pedido_vendedor(request, proveedor_id):
     proveedor = get_object_or_404(Proveedor, pk=proveedor_id)
     productos = proveedor.productos.filter(stock_disponible__gt=0)
     
-    # Lógica de filtrado de productos usando Python/Django puro
+    # Lógica de filtrado de productos usando Django puro
     busqueda = request.GET.get('q', '')
     if busqueda:
         productos = productos.filter(nombre__icontains=busqueda)
@@ -291,14 +376,57 @@ def crear_pedido_vendedor(request, proveedor_id):
     if request.method == 'POST':
         formulario = CrearPedidoVendedorForm(request.POST)
         if formulario.is_valid():
+            
+            # 1. Validar productos y cantidades antes de crear el pedido
+            productos_validos = []
+            errores = []
+            
+            for key, value in request.POST.items():
+                if key.startswith('cantidad_prod_') and value.isdigit() and int(value) > 0:
+                    producto_id = int(key.replace('cantidad_prod_', ''))
+                    cantidad = int(value)
+                    try:
+                        producto = Producto.objects.get(id=producto_id, proveedor=proveedor)
+                        if cantidad < producto.stock_minimo_pedido:
+                            errores.append(f"Para {producto.nombre} el mínimo es {producto.stock_minimo_pedido} unidades.")
+                        elif cantidad > producto.stock_disponible:
+                            errores.append(f"Stock insuficiente para {producto.nombre}.")
+                        else:
+                            productos_validos.append((producto, cantidad))
+                    except Producto.DoesNotExist:
+                        continue
+            
+            # Si no hay productos válidos, abortar la creación del pedido
+            if not productos_validos:
+                if errores:
+                    for error in errores:
+                        messages.error(request, error)
+                else:
+                    messages.error(request, "Debe seleccionar al menos un producto y cantidad válida para generar el pedido.")
+                
+                # Volver a renderizar la vista con los errores
+                return render(request, 'crear_pedido_vendedor.html', {
+                    'formulario': formulario, 
+                    'proveedor': proveedor, 
+                    'productos': productos,
+                    'vendedor': vendedor,
+                    'busqueda': busqueda
+                })
+            
+            # 2. Si todo está bien, crear el pedido
             pedido = formulario.save(commit=False)
             pedido.vendedor = vendedor
             pedido.proveedor = proveedor
             pedido.estado = 'En proceso'
             pedido.save()
             
-            # Aquí procesaríamos los detalles del pedido (productos)
-            # Por ahora, simplemente lo guardamos y redirigimos
+            # 3. Procesar los detalles del pedido
+            for producto, cantidad in productos_validos:
+                exito, mensaje = pedido.agregar_producto(producto, cantidad)
+                if not exito:
+                    messages.warning(request, f"Atención: {mensaje}")
+                        
+            messages.success(request, 'Pedido generado correctamente.')
             return redirect('historial_pedidos_vendedor')
     else:
         formulario = CrearPedidoVendedorForm()
@@ -331,3 +459,120 @@ def notificaciones_vendedor(request):
     notificaciones = vendedor.notificaciones_visita.order_by('-fecha_solicitud')
     
     return render(request, 'notificaciones_vendedor.html', {'notificaciones': notificaciones, 'vendedor': vendedor})
+
+
+# ==============================================================================
+# VISTAS DE LA TIENDA / COMPRADOR
+# ==============================================================================
+
+@login_required
+def dashboard_tienda(request):
+    if not hasattr(request.user, 'perfil_tienda'):
+        return redirect('index')
+    
+    tienda = request.user.perfil_tienda
+    
+    if request.method == 'POST':
+        formulario = EditarTiendaForm(request.POST, instance=tienda)
+        if formulario.is_valid():
+            formulario.save()
+            return redirect('dashboard_tienda')
+    else:
+        formulario = EditarTiendaForm(instance=tienda)
+        
+    context = {
+        'tienda': tienda,
+        'formulario': formulario,
+    }
+    return render(request, 'dashboard_tienda.html', context)
+
+
+@login_required
+def proveedores_tienda(request):
+    if not hasattr(request.user, 'perfil_tienda'):
+        return redirect('index')
+    
+    tienda = request.user.perfil_tienda
+    # Mostrar proveedores verificados y que aceptan solicitudes
+    proveedores = Proveedor.objects.filter(es_verificado=True)
+    
+    return render(request, 'proveedores_tienda.html', {'proveedores': proveedores, 'tienda': tienda})
+
+
+@login_required
+def catalogo_proveedor_tienda(request, proveedor_id):
+    if not hasattr(request.user, 'perfil_tienda'):
+        return redirect('index')
+    
+    tienda = request.user.perfil_tienda
+    proveedor = get_object_or_404(Proveedor, pk=proveedor_id)
+    productos = proveedor.productos.all()
+    
+    return render(request, 'catalogo_proveedor_tienda.html', {'proveedor': proveedor, 'productos': productos, 'tienda': tienda})
+
+
+@login_required
+@require_POST
+def solicitar_visita_vendedor(request, proveedor_id):
+    if not hasattr(request.user, 'perfil_tienda'):
+        return redirect('index')
+    
+    tienda = request.user.perfil_tienda
+    proveedor = get_object_or_404(Proveedor, pk=proveedor_id)
+    
+    # Obtener vendedores aprobados de este proveedor, ordenados por los que menos notificaciones tienen
+    vendedores = Vendedor.objects.filter(
+        solicitudes__proveedor=proveedor, 
+        solicitudes__estado='Aprobado'
+    ).annotate(
+        num_visitas=Count('notificaciones_visita')
+    ).order_by('num_visitas', '?')
+    
+    if vendedores.exists():
+        vendedor_seleccionado = vendedores.first()
+        SolicitudVisita.objects.create(
+            tienda=tienda,
+            vendedor=vendedor_seleccionado,
+            proveedor=proveedor,
+            estado='Pendiente'
+        )
+        messages.success(request, '¡Solicitud enviada exitosamente! Pronto un vendedor se acercará para atenderlo.')
+        
+    return redirect('catalogo_proveedor_tienda', proveedor_id=proveedor_id)
+
+
+@login_required
+@require_POST
+def atender_solicitud_visita(request, id):
+    if not hasattr(request.user, 'perfil_vendedor'):
+        return redirect('index')
+    
+    solicitud = get_object_or_404(SolicitudVisita, pk=id, vendedor=request.user.perfil_vendedor)
+    solicitud.estado = 'Atendido'
+    solicitud.save()
+    messages.success(request, 'Has marcado la solicitud como atendida.')
+    
+    return redirect('notificaciones_vendedor')
+
+
+@login_required
+def mis_pedidos_tienda(request):
+    if not hasattr(request.user, 'perfil_tienda'):
+        return redirect('index')
+    
+    tienda = request.user.perfil_tienda
+    pedidos = Pedido.objects.filter(tienda=tienda).order_by('-fecha')
+    
+    return render(request, 'mis_pedidos_tienda.html', {'pedidos': pedidos, 'tienda': tienda})
+
+
+@login_required
+def detalle_pedido_tienda(request, pedido_id):
+    if not hasattr(request.user, 'perfil_tienda'):
+        return redirect('index')
+    
+    tienda = request.user.perfil_tienda
+    pedido = get_object_or_404(Pedido, pk=pedido_id, tienda=tienda)
+    detalles = pedido.detalles.all()
+    
+    return render(request, 'detalle_pedido_tienda.html', {'pedido': pedido, 'detalles': detalles, 'tienda': tienda})

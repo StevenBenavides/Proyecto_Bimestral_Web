@@ -15,10 +15,12 @@
     <header class="b2b-header">
         <div class="container header-layout">
             <div class="logo-area">
-                <strong class="brand-logo">
-                    <a href="{% url 'dashboard_proveedor' %}" class="text-decoration-none text-inherit">Conecta<span
-                            class="color-accent">Stock</span></a>
-                </strong>
+                <strong class="brand-logo flex-align-center">
+    <a href="{% url 'dashboard_proveedor' %}" class="text-inherit-no-deco">
+        <img src="{% static 'images/iso_1.png' %}" alt="Logo" class="logo-img-small">
+        Conecta<span class="color-accent">Stock</span>
+    </a>
+</strong>
                 <span class="header-badge">Panel de Proveedor</span>
             </div>
             <nav aria-label="Navegación principal">
@@ -50,42 +52,67 @@
 
     <main class="dashboard-main">
         <section class="container dashboard-section">
-            <div class="section-header mb-lg">
-                <h1 class="font-2rem">Bienvenido, {{ proveedor.nombre_propietario }}</h1>
-                <p class="text-muted">Aquí tienes un resumen rápido de tu operativa en la red.</p>
+            
+            <div class="section-header mb-lg text-left section-header-wide">
+                <h1 class="font-2rem font-2rem-mb5">Bienvenido, {{ proveedor.nombre_propietario }}</h1>
+                <p class="text-muted font-1-1rem">Resumen financiero y operativo de tu red B2B.</p>
             </div>
 
-            <!-- Grid de Métricas -->
-            <div class="metric-grid">
+            <!-- Hero Financiero Premium -->
+            <div class="hero-financiero">
+                <h2 class="hero-subtitle">Ingreso Total Generado</h2>
+                <h1 class="hero-monto">${{ total_ventas|floatformat:2 }}</h1>
+                
+                <div class="hero-badge-container">
+                    <p class="hero-badge-text">
+                        <span>Comisiones Pendientes por Pagar:</span> 
+                        <strong class="hero-badge-monto">${{ total_comisiones|floatformat:2 }}</strong>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Grid de Acción Premium (Estilo Empresarial) -->
+            <div class="roles-grid grid-roles-responsive">
 
                 <!-- Tarjeta de Productos -->
-                <div class="form-card metric-card">
-                    <h3 class="metric-title">Productos en Catálogo</h3>
-                    <p class="metric-value primary">{{ num_productos }}</p>
-                    <a href="{% url 'mis_productos' %}" class="btn btn-secondary btn-sm mt-md w-100">Gestionar</a>
-                </div>
+                <a href="{% url 'mis_productos' %}" class="role-card role-card-padded">
+                    <div class="role-icon-wrapper role-icon-wrapper-lg role-icon-wrapper-primary">
+                        <span class="role-icon role-icon-lg">📦</span>
+                    </div>
+                    <h3 class="role-title role-title-large">{{ num_productos }}</h3>
+                    <p class="role-desc role-desc-padded">Productos en Catálogo</p>
+                    <span class="role-action-link role-action-sm">Gestionar Inventario</span>
+                </a>
 
                 <!-- Tarjeta de Pedidos Pendientes -->
-                <div class="form-card metric-card">
-                    <h3 class="metric-title">Pedidos Pendientes</h3>
-                    <p class="metric-value warning">{{ num_pedidos }}</p>
-                    <a href="{% url 'mis_pedidos' %}" class="btn btn-secondary btn-sm mt-md w-100">Revisar</a>
-                </div>
+                <a href="{% url 'mis_pedidos' %}" class="role-card role-card-padded">
+                    <div class="role-icon-wrapper role-icon-wrapper-lg role-icon-wrapper-warning">
+                        <span class="role-icon role-icon-lg">🚚</span>
+                    </div>
+                    <h3 class="role-title role-title-large">{{ num_pedidos }}</h3>
+                    <p class="role-desc role-desc-padded">Pedidos en Proceso</p>
+                    <span class="role-action-link role-action-sm">Revisar Despachos</span>
+                </a>
 
                 <!-- Tarjeta de Vendedores Aprobados -->
-                <div class="form-card metric-card">
-                    <h3 class="metric-title">Vendedores Activos</h3>
-                    <p class="metric-value success">{{ num_vendedores }}</p>
-                    <a href="{% url 'mis_vendedores' %}" class="btn btn-secondary btn-sm mt-md w-100">Ver Red</a>
-                </div>
+                <a href="{% url 'mis_vendedores' %}" class="role-card role-card-padded">
+                    <div class="role-icon-wrapper role-icon-wrapper-lg role-icon-wrapper-success">
+                        <span class="role-icon role-icon-lg">👥</span>
+                    </div>
+                    <h3 class="role-title role-title-large">{{ num_vendedores }}</h3>
+                    <p class="role-desc role-desc-padded">Vendedores Activos</p>
+                    <span class="role-action-link role-action-sm">Ver mi Red</span>
+                </a>
 
                 <!-- Tarjeta de Solicitudes -->
-                <div class="form-card metric-card {% if num_solicitudes > 0 %}active-border{% endif %}">
-                    <h3 class="metric-title">Nuevas Solicitudes</h3>
-                    <p class="metric-value info">{{ num_solicitudes }}</p>
-                    <a href="{% url 'mis_vendedores' %}"
-                        class="btn {% if num_solicitudes > 0 %}btn-primary{% else %}btn-secondary{% endif %} btn-sm mt-md w-100">Procesar</a>
-                </div>
+                <a href="{% url 'mis_vendedores' %}" class="role-card role-card-padded {% if num_solicitudes > 0 %}border-primary shadow-primary{% endif %}">
+                    <div class="role-icon-wrapper role-icon-wrapper-lg {% if num_solicitudes > 0 %}bg-primary text-white{% else %}role-icon-wrapper-info{% endif %}">
+                        <span class="role-icon role-icon-lg">🔔</span>
+                    </div>
+                    <h3 class="role-title role-title-large">{{ num_solicitudes }}</h3>
+                    <p class="role-desc role-desc-padded">Nuevas Solicitudes</p>
+                    <span class="role-action-link role-action-sm">Procesar Ingresos</span>
+                </a>
 
             </div>
         </section>

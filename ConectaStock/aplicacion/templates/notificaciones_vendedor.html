@@ -1,4 +1,5 @@
 {% load static %}
+{% load l10n %}
 <!DOCTYPE html>
 <html lang="es">
 
@@ -14,10 +15,12 @@
     <header class="b2b-header">
         <div class="container header-layout">
             <div class="logo-area">
-                <strong class="brand-logo">
-                    <a href="{% url 'dashboard_vendedor' %}" class="text-decoration-none text-inherit">Conecta<span
-                            class="color-accent">Stock</span></a>
-                </strong>
+                <strong class="brand-logo" style="display: flex; align-items: center;">
+    <a href="{% url 'dashboard_vendedor' %}" class="text-decoration-none text-inherit">
+        <img src="{% static 'images/iso_1.png' %}" alt="Logo" style="height: 36px; margin-right: 12px; border-radius: 4px;">
+        Conecta<span class="color-accent">Stock</span>
+    </a>
+</strong>
                 <span class="header-badge">Notificaciones</span>
             </div>
             <nav aria-label="Navegación principal">
@@ -43,7 +46,8 @@
                         <tr>
                             <th>Fecha</th>
                             <th>Tienda Solicitante</th>
-                            <th>Dirección (Lat / Lng)</th>
+                            <th>Proveedor Solicitado</th>
+                            <th>Dirección</th>
                             <th>Estado</th>
                             <th>Acción</th>
                         </tr>
@@ -53,7 +57,10 @@
                         <tr>
                             <td>{{ notificacion.fecha_solicitud|date:"d M Y H:i" }}</td>
                             <td><strong>{{ notificacion.tienda.nombre_tienda }}</strong><br><small>Contacto: {{ notificacion.tienda.nombre_propietario }}</small></td>
-                            <td class="font-mono text-sm">{{ notificacion.tienda.ubicacion_lat }}, {{ notificacion.tienda.ubicacion_lng }}</td>
+                            <td>{{ notificacion.proveedor.nombre_empresa|default:"N/A" }}</td>
+                            <td>
+                                <a href="https://www.google.com/maps?q={{ notificacion.tienda.ubicacion_lat|unlocalize }},{{ notificacion.tienda.ubicacion_lng|unlocalize }}" target="_blank" class="btn btn-secondary btn-sm" style="font-size: 0.8rem; padding: 4px 8px;">📍 Ver en Mapa</a>
+                            </td>
                             <td>
                                 {% if notificacion.estado == 'Pendiente' %}
                                 <span class="badge badge-pending">Pendiente</span>
@@ -62,14 +69,19 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <!-- Aquí podríamos añadir un botón para cambiar estado 
-                                 a Atendida, por simplicidad solo visual por ahora -->
-                                <a href="{% url 'mis_proveedores_asociados' %}" class="btn btn-primary btn-sm">Visitar y Vender</a>
+                                {% if notificacion.estado == 'Pendiente' %}
+                                <form action="{% url 'atender_solicitud_visita' notificacion.id %}" method="post" style="margin: 0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary btn-sm" style="font-size: 0.8rem; padding: 4px 8px;">Marcar como Atendida</button>
+                                </form>
+                                {% else %}
+                                <span class="text-muted"><small>Ya atendida</small></span>
+                                {% endif %}
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="5" class="text-center-empty">
+                            <td colspan="6" class="text-center-empty">
                                 No tienes notificaciones ni solicitudes de visita nuevas.
                             </td>
                         </tr>

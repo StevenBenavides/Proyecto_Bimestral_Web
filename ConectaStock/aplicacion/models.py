@@ -24,12 +24,27 @@ class Proveedor(models.Model):
     descripcion = models.TextField()
     logo = models.ImageField(upload_to='logos_proveedores/', null=True, blank=True)
     es_verificado = models.BooleanField(default=False)
+    acepta_solicitudes = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.nombre_empresa} - {self.ruc}"
 
     def get_nombre_completo_propietario(self):
         return f"{self.nombre_propietario} {self.apellido_propietario}"
+
+    def get_total_ventas(self):
+        pedidos_entregados = self.pedido_set.filter(estado='Entregado')
+        return sum([pedido.calcular_total() for pedido in pedidos_entregados])
+
+    def get_total_comisiones(self):
+        pedidos_entregados = self.pedido_set.filter(estado='Entregado')
+        total = 0
+        for pedido in pedidos_entregados:
+            solicitud = pedido.vendedor.solicitudes.filter(proveedor=self).first()
+            if solicitud and solicitud.comision:
+                comision = solicitud.comision
+                total += (pedido.calcular_total() * (comision / 100))
+        return total
 
 class Vendedor(models.Model):
     SECTOR_CHOICES = (
@@ -47,6 +62,15 @@ class Vendedor(models.Model):
     telefono = models.CharField(max_length=15)
     ciudad = models.CharField(max_length=50)
     sector = models.CharField(max_length=20, choices=SECTOR_CHOICES)
+
+    def get_total_ganancias(self):
+        pedidos_entregados = self.pedido_set.filter(estado='Entregado')
+        total = 0
+        for pedido in pedidos_entregados:
+            solicitud = self.solicitudes.filter(proveedor=pedido.proveedor).first()
+            if solicitud and solicitud.comision:
+                total += (pedido.calcular_total() * (solicitud.comision / 100))
+        return total
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
@@ -176,6 +200,27 @@ class Pedido(models.Model):
                 return False, "No se puede retroceder el estado del pedido."
         return False, "Estado no válido."
         
+    def agregar_producto(self, producto, cantidad):
+        if cantidad <= 0:
+            return False, "La cantidad debe ser mayor a cero."
+        if cantidad < producto.stock_minimo_pedido:
+            return False, f"La cantidad mínima requerida para {producto.nombre} es de {producto.stock_minimo_pedido}."
+        if producto.stock_disponible < cantidad:
+            return False, f"Stock insuficiente para {producto.nombre}."
+            
+        # Restar stock
+        producto.stock_disponible -= cantidad
+        producto.save()
+        
+        # Crear detalle
+        DetallePedido.objects.create(
+            pedido=self,
+            producto=producto,
+            cantidad=cantidad,
+            precio_unitario=producto.precio_unitario
+        )
+        return True, "Producto agregado correctamente."
+
     def calcular_total(self):
         # Esta logica suma los detalles para un pedido
         detalles = self.detalles.all()
@@ -191,6 +236,10 @@ class DetallePedido(models.Model):
     cantidad = models.IntegerField()
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
 
+    def get_subtotal(self):
+        # Calcula el subtotal del detalle del pedido
+        return self.cantidad * self.precio_unitario
+
 class SolicitudVisita(models.Model):
     ESTADO_CHOICES = (
         ('Pendiente', 'Pendiente'),
@@ -198,13 +247,10 @@ class SolicitudVisita(models.Model):
     )
     tienda = models.ForeignKey(Tienda, on_delete=models.CASCADE, related_name='solicitudes_visita')
     vendedor = models.ForeignKey(Vendedor, on_delete=models.CASCADE, related_name='notificaciones_visita')
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE, null=True, blank=True)
     fecha_solicitud = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='Pendiente')
     
     def __str__(self):
         # Logica para mostrar la solicitud de visita con el nombre de la tienda y el vendedor
         return f"Visita solicitada por {self.tienda.nombre_tienda} a {self.vendedor.nombre} - {self.estado}"
-
-    def get_subtotal(self):
-        # Calcula el subtotal del detalle del pedido
-        return self.cantidad * self.precio_unitario

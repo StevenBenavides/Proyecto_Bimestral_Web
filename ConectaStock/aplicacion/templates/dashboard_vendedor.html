@@ -14,10 +14,12 @@
     <header class="b2b-header">
         <div class="container header-layout">
             <div class="logo-area">
-                <strong class="brand-logo">
-                    <a href="{% url 'dashboard_vendedor' %}" class="text-decoration-none text-inherit">Conecta<span
-                            class="color-accent">Stock</span></a>
-                </strong>
+                <strong class="brand-logo flex-align-center">
+    <a href="{% url 'dashboard_vendedor' %}" class="text-inherit-no-deco">
+        <img src="{% static 'images/iso_1.png' %}" alt="Logo" class="logo-img-small">
+        Conecta<span class="color-accent">Stock</span>
+    </a>
+</strong>
                 <span class="header-badge">Panel de Vendedor</span>
             </div>
             <nav aria-label="Navegación principal">
@@ -34,41 +36,161 @@
         </div>
     </header>
 
-    <main class="dashboard-main">
+    <main class="dashboard-main main-bg-light">
         <div class="container dashboard-section">
-            <h1 class="font-1-8rem mb-lg">Hola, {{ vendedor.nombre }}</h1>
-
-            <div class="stats-grid mb-xl">
-                <div class="stat-card">
-                    <h3 class="stat-title">Proveedores Asociados</h3>
-                    <p class="stat-value">{{ num_proveedores }}</p>
+            
+            <div class="flex-between-end-mb40">
+                <div>
+                    <h1 class="title-2-2rem">Hola, {{ vendedor.nombre }}</h1>
+                    <p class="desc-gray-m0">Aquí está el resumen de tu rendimiento.</p>
                 </div>
-                <div class="stat-card">
-                    <h3 class="stat-title">Pedidos Gestionados</h3>
-                    <p class="stat-value">{{ num_pedidos }}</p>
-                </div>
-                <div class="stat-card">
-                    <h3 class="stat-title">Comisiones Pendientes</h3>
-                    <p class="stat-value text-success">${{ comisiones_pendientes|floatformat:2 }}</p>
+                <div class="stats-total-box">
+                    <p class="stats-total-label">Ganancias Totales</p>
+                    <p class="stats-total-amount">${{ ganancias_totales|floatformat:2 }}</p>
                 </div>
             </div>
 
-            <h2 class="font-1-4rem mb-md">Módulos Rápidos</h2>
-            <div class="info-grid">
-                <div class="form-card text-center" style="max-width: none;">
-                    <h3 class="mb-sm">Red de Proveedores</h3>
-                    <p class="mb-md section-desc">Busca nuevos proveedores o accede al catálogo de los que ya te han aprobado.</p>
-                    <div class="flex-center">
-                        <a href="{% url 'explorar_proveedores' %}" class="btn btn-primary" style="margin-right: 10px;">Explorar Directorio</a>
-                        <a href="{% url 'mis_proveedores_asociados' %}" class="btn btn-secondary">Mis Proveedores</a>
+            <!-- Stats Subtiles -->
+            <div class="stats-grid-3 mb-xl">
+                <div class="stat-box">
+                    <h3 class="stat-box-label">Proveedores Asociados</h3>
+                    <p class="stat-box-value">{{ num_proveedores }}</p>
+                </div>
+                <div class="stat-box">
+                    <h3 class="stat-box-label">Pedidos Gestionados</h3>
+                    <p class="stat-box-value">{{ num_pedidos }}</p>
+                </div>
+                <div class="stat-box">
+                    <h3 class="stat-box-label">Comisiones Pendientes</h3>
+                    <p class="stat-box-value-accent">${{ comisiones_pendientes|floatformat:2 }}</p>
+                </div>
+            </div>
+
+            <h2 class="section-title-sm">Tomar un Pedido Rápido</h2>
+            <div class="grid-cards-auto">
+                {% for proveedor in proveedores_aprobados %}
+                <a href="{% url 'crear_pedido_vendedor' proveedor.id %}" class="card-action">
+                    <div class="card-icon-circle">
+                        {% if proveedor.logo %}
+                        <img src="{{ proveedor.logo.url }}" alt="Logo" class="logo-img-contain">
+                        {% else %}
+                        <img src="{% static 'images/iso_1.png' %}" alt="Logo" style="height: 40px; border-radius: 4px;">
+                        {% endif %}
                     </div>
+                    <h3 class="card-title">{{ proveedor.nombre_empresa }}</h3>
+                    <p class="card-link-text">Generar Pedido →</p>
+                </a>
+                {% empty %}
+                <div class="empty-state-card">
+                    <p class="empty-state-text">No tienes proveedores aprobados aún.</p>
                 </div>
-                <div class="form-card text-center" style="max-width: none;">
-                    <h3 class="mb-sm">Mis Pedidos</h3>
-                    <p class="mb-md section-desc">Revisa el historial de pedidos y su estado de entrega a las tiendas.</p>
-                    <a href="{% url 'historial_pedidos_vendedor' %}" class="btn btn-primary">Ver Historial</a>
-                </div>
+                {% endfor %}
             </div>
+
+            <h2 class="section-title-sm">Módulos de Gestión</h2>
+            <div class="grid-modules-2">
+                <a href="{% url 'historial_pedidos_vendedor' %}" class="module-card">
+                    <h3 class="module-title">Mis Pedidos</h3>
+                    <p class="module-desc">Revisa el historial de pedidos y su estado de entrega a las tiendas.</p>
+                </a>
+                
+                <a href="{% url 'notificaciones_vendedor' %}" class="module-card">
+                    <h3 class="module-title">Notificaciones de Tiendas</h3>
+                    <p class="module-desc">Revisa las solicitudes de visita de las tiendas cercanas.</p>
+                    {% if num_notificaciones > 0 %}
+                    <span class="notification-badge">{{ num_notificaciones }}</span>
+                    {% endif %}
+                </a>
+                
+                <a href="{% url 'explorar_proveedores' %}" class="module-card">
+                    <h3 class="module-title">Explorar Directorio</h3>
+                    <p class="module-desc">Busca nuevos proveedores para asociarte y vender sus productos.</p>
+                </a>
+            </div>
+
+            <h2 class="section-title-sm" id="mis-postulaciones">Mis Postulaciones</h2>
+            <div class="table-card">
+                <table class="table-full">
+                    <thead>
+                        <tr class="table-header-row">
+                            <th class="table-th">Proveedor</th>
+                            <th class="table-th">Estado</th>
+                            <th class="table-th">Comisión Asignada</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for postulacion in postulaciones %}
+                        <tr class="table-row">
+                            <td class="table-td-bold">{{ postulacion.proveedor.nombre_empresa }}</td>
+                            <td class="table-td">
+                                {% if postulacion.estado == 'Pendiente' %}
+                                <span class="badge-status-pending">Pendiente</span>
+                                {% elif postulacion.estado == 'Aprobado' %}
+                                <span class="badge-status-approved">Aprobado</span>
+                                {% else %}
+                                <span class="badge-status-rejected">Rechazado</span>
+                                {% endif %}
+                            </td>
+                            <td class="table-td-bold">
+                                {% if postulacion.comision %}
+                                {{ postulacion.comision }}%
+                                {% else %}
+                                <span class="desc-gray-m0">N/A</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="table-td text-center desc-gray-m0" style="padding: 40px;">No has enviado postulaciones todavía.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <h2 class="section-title-sm-mt">Mi Perfil</h2>
+            <div class="profile-card">
+                <p class="profile-help-text"><strong>Cédula:</strong> {{ vendedor.cedula }} <br> <strong>RUC/RICE:</strong> {{ vendedor.ruc_rice|default:"N/A" }} <br> <em>(Para modificar estos datos debes contactar a soporte)</em></p>
+                
+                <form action="{% url 'dashboard_vendedor' %}" method="post">
+                    {% csrf_token %}
+                    
+                    {% if formulario.errors %}
+                        <div class="errorlist">
+                            Por favor corrige los errores abajo.
+                        </div>
+                    {% endif %}
+
+                    <div class="profile-grid-2">
+                        <div class="profile-form-group">
+                            <label class="profile-form-label">Nombres</label>
+                            <input type="text" name="nombre" value="{{ formulario.nombre.value|default:'' }}" class="profile-form-input" required>
+                        </div>
+                        <div class="profile-form-group">
+                            <label class="profile-form-label">Apellidos</label>
+                            <input type="text" name="apellido" value="{{ formulario.apellido.value|default:'' }}" class="profile-form-input" required>
+                        </div>
+                        <div class="profile-form-group">
+                            <label class="profile-form-label">Correo Electrónico</label>
+                            <input type="email" name="correo" value="{{ formulario.correo.value|default:'' }}" class="profile-form-input" required>
+                        </div>
+                        <div class="profile-form-group">
+                            <label class="profile-form-label">Teléfono</label>
+                            <input type="text" name="telefono" value="{{ formulario.telefono.value|default:'' }}" class="profile-form-input" required>
+                        </div>
+                        <div class="profile-form-group">
+                            <label class="profile-form-label">Ciudad</label>
+                            <input type="text" name="ciudad" value="{{ formulario.ciudad.value|default:'' }}" class="profile-form-input" required>
+                        </div>
+                        <div class="profile-form-group">
+                            <label class="profile-form-label">Sector Preferido</label>
+                            <input type="text" name="sector" value="{{ formulario.sector.value|default:'' }}" class="profile-form-input" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary profile-btn-mt">Guardar Cambios</button>
+                </form>
+            </div>
+            
         </div>
     </main>
 

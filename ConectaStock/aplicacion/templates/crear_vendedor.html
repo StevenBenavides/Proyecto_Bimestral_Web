@@ -14,9 +14,12 @@
     <header class="b2b-header">
         <div class="container header-layout">
             <div class="logo-area">
-                <strong class="brand-logo"><a href="{% url 'index' %}"
-                        style="text-decoration: none; color: inherit;">Conecta<span
-                            class="color-accent">Stock</span></a></strong>
+                <strong class="brand-logo flex-align-center">
+    <a href="{% url 'index' %}" class="text-inherit-no-deco">
+        <img src="{% static 'images/iso_1.png' %}" alt="Logo" class="logo-img-small">
+        Conecta<span class="color-accent">Stock</span>
+    </a>
+</strong>
             </div>
             <nav aria-label="Navegación principal">
                 <ul class="nav-links">

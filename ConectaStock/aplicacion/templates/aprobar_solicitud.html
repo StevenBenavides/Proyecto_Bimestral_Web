@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aprobar Solicitud | Dashboard Proveedor</title>
+    <title>{% if editando %}Editar Comisión{% else %}Aprobar Solicitud{% endif %} | Dashboard Proveedor</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
@@ -14,9 +14,13 @@
     <header class="b2b-header">
         <div class="container header-layout">
             <div class="logo-area">
-                <strong class="brand-logo"><a href="{% url 'dashboard_proveedor' %}"
-                        style="text-decoration: none; color: inherit;">Conecta<span
-                            class="color-accent">Stock</span></a></strong>
+                <strong class="brand-logo" style="display: flex; align-items: center;">
+    <a href="{% url 'dashboard_proveedor' %}"
+                        style="text-decoration: none; color: inherit;">
+        <img src="{% static 'images/iso_1.png' %}" alt="Logo" style="height: 36px; margin-right: 12px; border-radius: 4px;">
+        Conecta<span class="color-accent">Stock</span>
+    </a>
+</strong>
             </div>
             <nav aria-label="Navegación principal">
                 <ul class="nav-links">
@@ -31,8 +35,20 @@
         <div class="container dashboard-section">
             <div class="form-card">
                 <div class="section-header text-center mb-lg">
-                    <h2 class="section-title font-1-5rem">Aprobar a {{ solicitud.vendedor.nombre }} {{ solicitud.vendedor.apellido }}</h2>
-                    <p class="section-desc">Revisa el perfil del vendedor y establece su comisión de ventas.</p>
+                    <h2 class="section-title font-1-5rem">
+                        {% if editando %}
+                            Editar Comisión de {{ solicitud.vendedor.nombre }} {{ solicitud.vendedor.apellido }}
+                        {% else %}
+                            Aprobar a {{ solicitud.vendedor.nombre }} {{ solicitud.vendedor.apellido }}
+                        {% endif %}
+                    </h2>
+                    <p class="section-desc">
+                        {% if editando %}
+                            Modifica la comisión de ventas asignada a este vendedor.
+                        {% else %}
+                            Revisa el perfil del vendedor y establece su comisión de ventas.
+                        {% endif %}
+                    </p>
                 </div>
 
                 <div class="info-box">
@@ -44,7 +60,7 @@
                     </blockquote>
                 </div>
 
-                <form action="{% url 'aprobar_solicitud' solicitud.id %}" method="post">
+                <form action="{% if editando %}{% url 'editar_comision' solicitud.id %}{% else %}{% url 'aprobar_solicitud' solicitud.id %}{% endif %}" method="post">
                     {% csrf_token %}
 
                     {% for field in formulario %}
@@ -61,7 +77,9 @@
                     {% endfor %}
 
                     <div class="text-center mt-lg">
-                        <button type="submit" class="btn btn-primary btn-large w-100">Aprobar Vendedor</button>
+                        <button type="submit" class="btn btn-primary btn-large w-100">
+                            {% if editando %}Guardar Cambios{% else %}Aprobar Vendedor{% endif %}
+                        </button>
                     </div>
                 </form>
             </div>

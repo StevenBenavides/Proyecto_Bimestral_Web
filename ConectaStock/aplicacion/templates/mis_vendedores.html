@@ -14,10 +14,12 @@
     <header class="b2b-header">
         <div class="container header-layout">
             <div class="logo-area">
-                <strong class="brand-logo">
-                    <a href="{% url 'dashboard_proveedor' %}" class="text-decoration-none text-inherit">Conecta<span
-                            class="color-accent">Stock</span></a>
-                </strong>
+                <strong class="brand-logo" style="display: flex; align-items: center;">
+    <a href="{% url 'dashboard_proveedor' %}" class="text-decoration-none text-inherit">
+        <img src="{% static 'images/iso_1.png' %}" alt="Logo" style="height: 36px; margin-right: 12px; border-radius: 4px;">
+        Conecta<span class="color-accent">Stock</span>
+    </a>
+</strong>
                 <span class="header-badge">Vendedores</span>
             </div>
             <nav aria-label="Navegación principal">
@@ -44,7 +46,17 @@
     <main class="dashboard-main">
         <section class="container dashboard-section">
 
-            <h1 class="font-1-8rem mb-lg">Gestión de Fuerza de Ventas</h1>
+            <div class="flex-between mb-lg">
+                <h1 class="font-1-8rem">Gestión de Fuerza de Ventas</h1>
+                <form action="{% url 'toggle_recepcion_solicitudes' %}" method="post" style="margin: 0;">
+                    {% csrf_token %}
+                    {% if proveedor.acepta_solicitudes %}
+                        <button type="submit" class="btn btn-secondary btn-sm" style="color: #dc3545; border-color: #fce8e6; background-color: #fce8e6;">Desactivar recepción de solicitudes</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-primary btn-sm" style="background-color: #34a853;">Activar recepción de solicitudes</button>
+                    {% endif %}
+                </form>
+            </div>
 
             <!-- Sección Solicitudes Pendientes -->
             <div class="mb-lg">
@@ -68,8 +80,14 @@
                                 <td>{{ sol.vendedor.ciudad }} <br> <small>{{ sol.vendedor.sector }}</small></td>
                                 <td>{{ sol.descripcion_ganas|truncatewords:8 }}</td>
                                 <td>
-                                    <a href="{% url 'aprobar_solicitud' sol.id %}"
-                                        class="btn btn-primary btn-sm">Revisar y Aprobar</a>
+                                    <div style="display: flex; gap: 8px;">
+                                        <a href="{% url 'aprobar_solicitud' sol.id %}"
+                                            class="btn btn-primary btn-sm" style="padding: 0 12px; min-height: 36px; font-size: 0.85rem;">Revisar y Aprobar</a>
+                                        <form action="{% url 'rechazar_solicitud' sol.id %}" method="post" onsubmit="return confirm('¿Seguro que deseas rechazar esta solicitud?');" style="margin: 0;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-secondary btn-sm" style="padding: 0 12px; min-height: 36px; color: #dc3545; border-color: #dc3545; font-size: 0.85rem;">Rechazar</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             {% empty %}
@@ -96,6 +114,7 @@
                                 <th>Contacto</th>
                                 <th>Comisión Asignada</th>
                                 <th>Estado</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -106,10 +125,19 @@
                                 <td>{{ sol.vendedor.telefono }}</td>
                                 <td><strong>{{ sol.comision }}%</strong></td>
                                 <td><span class="badge badge-success">Activo</span></td>
+                                <td>
+                                    <div style="display: flex; gap: 8px;">
+                                        <a href="{% url 'editar_comision' sol.id %}" class="btn btn-secondary btn-sm" style="padding: 0 12px; min-height: 36px; font-size: 0.85rem;">Editar</a>
+                                        <form action="{% url 'eliminar_vendedor' sol.id %}" method="post" onsubmit="return confirm('¿Seguro que deseas desligar a este vendedor de tu red de ventas?');" style="margin: 0;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary btn-sm" style="padding: 0 12px; min-height: 36px; background-color: #dc3545; box-shadow: none; font-size: 0.85rem;">Eliminar</button>
+                                        </form>
+                                    </div>
+                                </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="5" class="text-center-empty">
+                                <td colspan="6" class="text-center-empty">
                                     Aún no has aprobado a ningún vendedor.
                                 </td>
                             </tr>

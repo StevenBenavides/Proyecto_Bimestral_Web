@@ -5,8 +5,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Pedidos | Dashboard Proveedor</title>
+    <title>Mis Pedidos - ConectaStock</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
 </head>
 
 <body>
@@ -15,17 +16,21 @@
         <div class="container header-layout">
             <div class="logo-area">
                 <strong class="brand-logo" style="display: flex; align-items: center;">
-    <a href="{% url 'dashboard_proveedor' %}" class="text-decoration-none text-inherit">
-        <img src="{% static 'images/iso_1.png' %}" alt="Logo" style="height: 36px; margin-right: 12px; border-radius: 4px;">
-        Conecta<span class="color-accent">Stock</span>
-    </a>
-</strong>
-                <span class="header-badge">Pedidos</span>
+                    <a href="{% url 'dashboard_tienda' %}" class="text-decoration-none text-inherit">
+                        <img src="{% static 'images/iso_1.png' %}" alt="Logo" style="height: 36px; margin-right: 12px; border-radius: 4px;">
+                        Conecta<span class="color-accent">Stock</span>
+                    </a>
+                </strong>
+                <span class="header-badge">Comprador</span>
             </div>
             <nav aria-label="Navegación principal">
                 <ul class="nav-links">
-                    <li><strong class="text-primary">{{ proveedor.nombre_empresa }}</strong></li>
-                    <li><a href="{% url 'dashboard_proveedor' %}" class="btn btn-secondary btn-sm">Volver al Resumen</a>
+                    <li><strong class="text-primary">{{ tienda.nombre_tienda }}</strong></li>
+                    <li>
+                        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-logout">Cerrar Sesión</button>
+                        </form>
                     </li>
                 </ul>
             </nav>
@@ -35,10 +40,9 @@
     <nav class="dashboard-nav">
         <div class="container">
             <ul>
-                <li><a href="{% url 'dashboard_proveedor' %}">Resumen</a></li>
-                <li><a href="{% url 'mis_productos' %}">Mi Catálogo</a></li>
-                <li><a href="{% url 'mis_vendedores' %}">Mis Vendedores</a></li>
-                <li><a href="{% url 'mis_pedidos' %}" class="active">Mis Pedidos</a></li>
+                <li><a href="{% url 'dashboard_tienda' %}">Mi Perfil</a></li>
+                <li><a href="{% url 'proveedores_tienda' %}">Explorar Proveedores</a></li>
+                <li><a href="{% url 'mis_pedidos_tienda' %}" class="active">Mis Pedidos</a></li>
             </ul>
         </div>
     </nav>
@@ -46,7 +50,7 @@
     <main class="dashboard-main">
         <section class="container dashboard-section">
 
-            <h1 class="font-1-8rem mb-lg">Trazabilidad de Pedidos</h1>
+            <h1 class="font-1-8rem mb-lg">Mis Pedidos Solicitados</h1>
 
             <div class="table-responsive">
                 <table class="data-table">
@@ -54,7 +58,7 @@
                         <tr>
                             <th>Orden #</th>
                             <th>Fecha</th>
-                            <th>Tienda (Cliente)</th>
+                            <th>Proveedor</th>
                             <th>Vendedor</th>
                             <th>Monto Total</th>
                             <th>Estado</th>
@@ -66,7 +70,12 @@
                         <tr>
                             <td class="font-mono">{{ pedido.numero_pedido }}</td>
                             <td>{{ pedido.fecha|date:"d M Y" }}</td>
-                            <td>{{ pedido.tienda.nombre_tienda }}</td>
+                            <td>
+                                {% if pedido.proveedor.logo %}
+                                <img src="{{ pedido.proveedor.logo.url }}" alt="Logo" style="height: 24px; vertical-align: middle; margin-right: 8px; border-radius: 4px;">
+                                {% endif %}
+                                {{ pedido.proveedor.nombre_empresa }}
+                            </td>
                             <td>{{ pedido.vendedor.nombre }} {{ pedido.vendedor.apellido }}</td>
                             <td class="text-primary">${{ pedido.calcular_total|floatformat:2 }}</td>
                             <td>
@@ -81,14 +90,13 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <a href="{% url 'gestionar_pedido' pedido.id %}"
-                                    class="btn btn-primary btn-sm">Gestionar</a>
+                                <a href="{% url 'detalle_pedido_tienda' pedido.id %}" class="btn btn-secondary btn-sm">Ver Trazabilidad</a>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
                             <td colspan="7" class="text-center-empty">
-                                No hay pedidos registrados en tu empresa todavía.
+                                Aún no tienes pedidos registrados en tu tienda.
                             </td>
                         </tr>
                         {% endfor %}
@@ -100,5 +108,4 @@
     </main>
 
 </body>
-
 </html>

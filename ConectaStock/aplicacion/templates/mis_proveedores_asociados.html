@@ -14,10 +14,12 @@
     <header class="b2b-header">
         <div class="container header-layout">
             <div class="logo-area">
-                <strong class="brand-logo">
-                    <a href="{% url 'dashboard_vendedor' %}" class="text-decoration-none text-inherit">Conecta<span
-                            class="color-accent">Stock</span></a>
-                </strong>
+                <strong class="brand-logo" style="display: flex; align-items: center;">
+    <a href="{% url 'dashboard_vendedor' %}" class="text-decoration-none text-inherit">
+        <img src="{% static 'images/iso_1.png' %}" alt="Logo" style="height: 36px; margin-right: 12px; border-radius: 4px;">
+        Conecta<span class="color-accent">Stock</span>
+    </a>
+</strong>
                 <span class="header-badge">Mis Redes</span>
             </div>
             <nav aria-label="Navegación principal">

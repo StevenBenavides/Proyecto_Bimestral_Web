@@ -14,10 +14,12 @@
     <header class="b2b-header">
         <div class="container header-layout">
             <div class="logo-area">
-                <strong class="brand-logo">
-                    <a href="{% url 'dashboard_vendedor' %}" class="text-decoration-none text-inherit">Conecta<span
-                            class="color-accent">Stock</span></a>
-                </strong>
+                <strong class="brand-logo" style="display: flex; align-items: center;">
+    <a href="{% url 'dashboard_vendedor' %}" class="text-decoration-none text-inherit">
+        <img src="{% static 'images/iso_1.png' %}" alt="Logo" style="height: 36px; margin-right: 12px; border-radius: 4px;">
+        Conecta<span class="color-accent">Stock</span>
+    </a>
+</strong>
                 <span class="header-badge">Mis Pedidos</span>
             </div>
             <nav aria-label="Navegación principal">
@@ -36,6 +38,16 @@
             <div class="flex-between mb-lg">
                 <h1 class="font-1-8rem">Historial de Ventas</h1>
             </div>
+
+            {% if messages %}
+            <div class="messages mb-md">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" style="padding: 15px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 4px; margin-bottom: 10px;">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
 
             <div class="table-responsive">
                 <table class="data-table">

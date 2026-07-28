@@ -229,6 +229,38 @@ class GestionarPedidoForm(ModelForm):
         fields = ['estado', 'fecha_estimada_entrega', 'numero_contacto']
         labels = {
             'estado': _('Estado actual del pedido'),
-            'fecha_estimada_entrega': _('Fecha estimada de entrega (YYYY-MM-DD)'),
+            'fecha_estimada_entrega': _('Fecha estimada de entrega'),
             'numero_contacto': _('Número de contacto para entrega'),
+        }
+        widgets = {
+            'fecha_estimada_entrega': forms.DateInput(format=('%Y-%m-%d'), attrs={'class':'form-control', 'type': 'date'}),
+        }
+
+
+class EditarTiendaForm(ModelForm):
+    class Meta:
+        model = Tienda
+        fields = ['nombre_tienda', 'ubicacion_lat', 'ubicacion_lng']
+        labels = {
+            'nombre_tienda': _('Nombre de la tienda'),
+            'ubicacion_lat': _('Latitud de ubicación'),
+            'ubicacion_lng': _('Longitud de ubicación'),
+        }
+        widgets = {
+            'ubicacion_lat': forms.HiddenInput(),
+            'ubicacion_lng': forms.HiddenInput(),
+        }
+
+
+class EditarVendedorForm(ModelForm):
+    class Meta:
+        model = Vendedor
+        fields = ['nombre', 'apellido', 'correo', 'telefono', 'ciudad', 'sector']
+        labels = {
+            'nombre': _('Nombres'),
+            'apellido': _('Apellidos'),
+            'correo': _('Correo electrónico válido'),
+            'telefono': _('Número de teléfono válido'),
+            'ciudad': _('Ciudad donde reside'),
+            'sector': _('Sector de preferencia para trabajar'),
         }

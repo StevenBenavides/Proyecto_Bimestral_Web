@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trazabilidad del Pedido - ConectaStock</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+</head>
+
+<body>
+
+    <header class="b2b-header">
+        <div class="container header-layout">
+            <div class="logo-area">
+                <strong class="brand-logo" style="display: flex; align-items: center;">
+                    <a href="{% url 'dashboard_tienda' %}" class="text-decoration-none text-inherit">
+                        <img src="{% static 'images/iso_1.png' %}" alt="Logo"
+                            style="height: 36px; margin-right: 12px; border-radius: 4px;">
+                        Conecta<span class="color-accent">Stock</span>
+                    </a>
+                </strong>
+                <span class="header-badge">Comprador</span>
+            </div>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><strong class="text-primary">{{ tienda.nombre_tienda }}</strong></li>
+                    <li><a href="{% url 'mis_pedidos_tienda' %}" class="btn btn-secondary btn-sm">Volver a Mis
+                            Pedidos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <section class="container dashboard-section">
+
+            <div class="form-card mx-auto form-card-wide">
+                <div class="section-header text-center mb-lg">
+                    <h2 class="section-title font-2rem">Trazabilidad del Pedido</h2>
+                    <p class="section-desc">Orden #<span class="font-mono text-primary">{{ pedido.numero_pedido
+                            }}</span></p>
+                </div>
+
+                <!-- Timeline Visual -->
+                <div class="timeline">
+                    <div
+                        class="timeline-step {% if pedido.estado in 'En proceso,Enviado,En ruta,Entregado' %}completed{% endif %}">
+                        <div class="dot">1</div>
+                        <div class="label">En proceso</div>
+                    </div>
+                    <div
+                        class="timeline-step {% if pedido.estado in 'Enviado,En ruta,Entregado' %}completed{% endif %}">
+                        <div class="dot">2</div>
+                        <div class="label">Enviado</div>
+                    </div>
+                    <div class="timeline-step {% if pedido.estado in 'En ruta,Entregado' %}completed{% endif %}">
+                        <div class="dot">3</div>
+                        <div class="label">En ruta</div>
+                    </div>
+                    <div class="timeline-step {% if pedido.estado == 'Entregado' %}completed{% endif %}">
+                        <div class="dot">4</div>
+                        <div class="label">Entregado</div>
+                    </div>
+                </div>
+
+                <div class="info-grid mt-lg">
+                    <div>
+                        <p class="mb-sm"><strong>Proveedor:</strong> {{ pedido.proveedor.nombre_empresa }}</p>
+                        <p class="mb-sm"><strong>Vendedor:</strong> {{ pedido.vendedor.nombre }} {{ pedido.vendedor.apellido }}</p>
+                        <p class="mb-sm"><strong>Fecha Solicitud:</strong> {{ pedido.fecha|date:"d M Y, H:i" }}</p>
+                        <p class="mb-sm"><strong>Fecha Estimada Entrega:</strong> 
+                            {% if pedido.fecha_estimada_entrega %}
+                            <span class="fecha-estimada-entrega">{{ pedido.fecha_estimada_entrega|date:"d M Y" }}</span>
+                            {% else %}
+                            <span class="text-muted">Por confirmar</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="mb-sm"><strong>Monto Total:</strong> <span class="price-highlight font-1-5rem-inline">${{ pedido.calcular_total|floatformat:2 }}</span></p>
+                        <p class="mb-sm"><strong>Método de Pago:</strong> {{ pedido.metodo_pago }}</p>
+                        {% if pedido.numero_transferencia %}
+                        <p class="mb-sm"><strong>Ref. Transferencia:</strong> {{ pedido.numero_transferencia }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if pedido.numero_contacto %}
+                <div class="contact-box">
+                    <h4>Teléfono de Contacto para la Entrega</h4>
+                    <p class="phone-number">{{ pedido.numero_contacto }}</p>
+                    <p class="contact-box-help">El repartidor o proveedor se
+                        comunicará a través de este número para coordinar la entrega.</p>
+                </div>
+                {% endif %}
+
+                <hr class="divider-line divider-line-my-xl">
+
+                <h3 class="mb-md">Detalle de Productos</h3>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unitario</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for detalle in detalles %}
+                            <tr>
+                                <td>{{ detalle.producto.nombre }}</td>
+                                <td>{{ detalle.cantidad }}</td>
+                                <td>${{ detalle.precio_unitario }}</td>
+                                <td class="font-mono text-primary">${{ detalle.get_subtotal|floatformat:2 }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center-empty">No hay productos en este pedido.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </section>
+    </main>
+
+</body>
+
+</html>
