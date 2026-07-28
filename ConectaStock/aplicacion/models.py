@@ -37,6 +37,8 @@ class Proveedor(models.Model):
         return sum([pedido.calcular_total() for pedido in pedidos_entregados])
 
     def get_total_comisiones(self):
+        # Aqui cada pedido tiene un vendedor asociado 
+        # y cada vendedor tiene una solicitud de comision para este proveedor
         pedidos_entregados = self.pedido_set.filter(estado='Entregado')
         total = 0
         for pedido in pedidos_entregados:
@@ -69,6 +71,7 @@ class Vendedor(models.Model):
         for pedido in pedidos_entregados:
             solicitud = self.solicitudes.filter(proveedor=pedido.proveedor).first()
             if solicitud and solicitud.comision:
+                # Calcula la ganancia del vendedor basado en la comisión asignada
                 total += (pedido.calcular_total() * (solicitud.comision / 100))
         return total
 
@@ -88,6 +91,7 @@ class SolicitudVendedor(models.Model):
     comision = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True) # Porcentaje
 
     def aprobar_solicitud(self, comision_asignada):
+        # Logica para aprobar la solicitud y asignar una comisión
         if comision_asignada is None or comision_asignada <= 0:
             return False, "Debe asignar una comisión válida."
         self.comision = comision_asignada
@@ -212,7 +216,7 @@ class Pedido(models.Model):
         producto.stock_disponible -= cantidad
         producto.save()
         
-        # Crear detalle
+        # Crear detalle con un diccionario que contenga el producto, cantidad y precio unitario
         DetallePedido.objects.create(
             pedido=self,
             producto=producto,
