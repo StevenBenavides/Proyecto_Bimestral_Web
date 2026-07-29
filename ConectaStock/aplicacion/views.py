@@ -5,6 +5,8 @@ from django.db.models import Count
 from django.contrib import messages
 from aplicacion.models import *
 from aplicacion.forms import *
+import csv
+import io
 
 def index(request):
     if request.user.is_authenticated:
@@ -64,14 +66,36 @@ def dashboard_proveedor(request):
         return redirect('index')
     
     proveedor = request.user.perfil_proveedor
+    vendedores_activos = proveedor.solicitudes_vendedores.filter(estado='Aprobado')
+    kpis_vendedores = []
+    
+    for solicitud in vendedores_activos:
+        vendedor = solicitud.vendedor
+        pedidos_vendedor = Pedido.objects.filter(proveedor=proveedor, vendedor=vendedor)
+        pedidos_entregados = pedidos_vendedor.filter(estado='Entregado')
+        total_ventas_vendedor = sum([p.calcular_total() for p in pedidos_entregados])
+        
+        kpis_vendedores.append({
+            'vendedor': vendedor,
+            'comision_actual': solicitud.comision,
+            'total_pedidos': pedidos_vendedor.count(),
+            'pedidos_entregados': pedidos_entregados.count(),
+            'total_ventas': total_ventas_vendedor,
+            'id_solicitud': solicitud.id
+        })
+    
+    # Ordenar por ventas generadas (descendente)
+    kpis_vendedores.sort(key=lambda x: x['total_ventas'], reverse=True)
+
     context = {
         'proveedor': proveedor,
         'num_productos': proveedor.productos.count(),
         'num_pedidos': Pedido.objects.filter(proveedor=proveedor, estado='En proceso').count(),
-        'num_vendedores': proveedor.solicitudes_vendedores.filter(estado='Aprobado').count(),
+        'num_vendedores': vendedores_activos.count(),
         'num_solicitudes': proveedor.solicitudes_vendedores.filter(estado='Pendiente').count(),
         'total_ventas': proveedor.get_total_ventas(),
         'total_comisiones': proveedor.get_total_comisiones(),
+        'kpis_vendedores': kpis_vendedores,
     }
     return render(request, 'dashboard_proveedor.html', context)
 
@@ -102,6 +126,70 @@ def crear_producto(request):
     else:
         formulario = ProductoForm()
     return render(request, 'crear_producto.html', {'formulario': formulario})
+
+
+@login_required
+@require_POST
+def cargar_productos_csv(request):
+    if not hasattr(request.user, 'perfil_proveedor'):
+        return redirect('index')
+    
+    proveedor = request.user.perfil_proveedor
+    
+    if 'csv_file' not in request.FILES:
+        messages.error(request, "No se ha subido ningún archivo.")
+        return redirect('mis_productos')
+        
+    csv_file = request.FILES['csv_file']
+    if not csv_file.name.endswith('.csv'):
+        messages.error(request, "El archivo debe tener formato .csv")
+        return redirect('mis_productos')
+        
+    try:
+        data_set = csv_file.read().decode('UTF-8')
+        io_string = io.StringIO(data_set)
+        reader = csv.reader(io_string, delimiter=',', quotechar='"')
+        
+        # Saltar la cabecera
+        next(reader, None)
+        
+        productos_a_crear = []
+        for row in reader:
+            if len(row) < 6:
+                continue
+                
+            nombre = row[0].strip()
+            descripcion = row[1].strip()
+            precio_unitario = row[2].strip()
+            stock_disponible = row[3].strip()
+            stock_minimo = row[4].strip()
+            unidad = row[5].strip()
+            nombre_categoria = row[6].strip() if len(row) > 6 else "General"
+            
+            categoria, _ = Categoria.objects.get_or_create(nombre=nombre_categoria)
+            
+            producto = Producto(
+                nombre=nombre,
+                descripcion=descripcion,
+                precio_unitario=float(precio_unitario) if precio_unitario else 0.0,
+                stock_disponible=int(stock_disponible) if stock_disponible else 0,
+                stock_minimo_pedido=int(stock_minimo) if stock_minimo else 1,
+                unidad_medida=unidad if unidad in ['Paquete', 'Unidad'] else 'Unidad',
+                categoria=categoria,
+                proveedor=proveedor
+            )
+            # generar sku
+            producto.sku = producto.generar_sku()
+            
+            productos_a_crear.append(producto)
+            
+        Producto.objects.bulk_create(productos_a_crear)
+        messages.success(request, f"Se han cargado {len(productos_a_crear)} productos exitosamente.")
+        
+    except Exception as e:
+        messages.error(request, f"Error al procesar el archivo: {str(e)}")
+        
+    return redirect('mis_productos')
 
 
 @login_required

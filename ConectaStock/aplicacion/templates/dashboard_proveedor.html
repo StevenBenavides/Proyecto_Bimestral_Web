@@ -115,6 +115,50 @@
                 </a>
 
             </div>
+
+            <!-- KPI Vendedores (Rendimiento) -->
+            <div class="section-header mt-xl mb-md text-left">
+                <h2 class="font-1-5rem">Rendimiento de Asociados (KPIs)</h2>
+                <p class="text-muted">Monitorea la actividad de tus vendedores para ajustar sus comisiones o desvincularlos si es necesario.</p>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Vendedor</th>
+                            <th>Pedidos Totales</th>
+                            <th>Entregas Exitosas</th>
+                            <th>Ingresos Generados</th>
+                            <th>Comisión</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for kpi in kpis_vendedores %}
+                        <tr>
+                            <td><strong>{{ kpi.vendedor.nombre }} {{ kpi.vendedor.apellido }}</strong><br><small class="text-muted">{{ kpi.vendedor.ciudad }} - {{ kpi.vendedor.sector }}</small></td>
+                            <td>{{ kpi.total_pedidos }}</td>
+                            <td>{{ kpi.pedidos_entregados }}</td>
+                            <td class="font-mono text-success font-weight-bold">${{ kpi.total_ventas|floatformat:2 }}</td>
+                            <td>{{ kpi.comision_actual }}%</td>
+                            <td>
+                                <a href="{% url 'editar_comision' kpi.id_solicitud %}" class="btn btn-secondary btn-sm" style="margin-right: 5px;">Ajustar</a>
+                                <form action="{% url 'eliminar_vendedor' kpi.id_solicitud %}" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas desvincular a este vendedor? Ya no podrá tomar pedidos para tu empresa.');">Desvincular</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center-empty">No tienes vendedores asociados que mostrar.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
         </section>
     </main>
 

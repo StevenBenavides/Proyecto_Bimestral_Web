@@ -56,7 +56,7 @@
                         {% for notificacion in notificaciones %}
                         <tr>
                             <td>{{ notificacion.fecha_solicitud|date:"d M Y H:i" }}</td>
-                            <td><strong>{{ notificacion.tienda.nombre_tienda }}</strong><br><small>Contacto: {{ notificacion.tienda.nombre_propietario }}</small></td>
+                            <td><strong>{{ notificacion.tienda.nombre_tienda }}</strong><br><small>Contacto: {{ notificacion.tienda.nombre_propietario }}<br>Tel: <a href="tel:{{ notificacion.tienda.telefono }}" style="color: inherit; text-decoration: underline;">{{ notificacion.tienda.telefono }}</a></small></td>
                             <td>{{ notificacion.proveedor.nombre_empresa|default:"N/A" }}</td>
                             <td>
                                 <a href="https://www.google.com/maps?q={{ notificacion.tienda.ubicacion_lat|unlocalize }},{{ notificacion.tienda.ubicacion_lng|unlocalize }}" target="_blank" class="btn btn-secondary btn-sm" style="font-size: 0.8rem; padding: 4px 8px;">📍 Ver en Mapa</a>

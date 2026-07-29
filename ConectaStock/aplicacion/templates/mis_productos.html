@@ -46,9 +46,32 @@
     <main class="dashboard-main">
         <section class="container dashboard-section">
 
-            <div class="flex-between mb-lg">
+            <!-- Mensajes de Alerta -->
+            {% if messages %}
+            <div class="messages mb-md">
+                {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" style="padding: 10px; border-radius: 6px; margin-bottom: 10px; font-weight: 500; {% if message.tags == 'success' %}background-color: #d4edda; color: #155724;{% elif message.tags == 'error' %}background-color: #f8d7da; color: #721c24;{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="flex-between mb-lg" style="align-items: center; flex-wrap: wrap;">
                 <h1 class="font-1-8rem">Gestión de Productos</h1>
-                <a href="{% url 'crear_producto' %}" class="btn btn-primary">Añadir Nuevo Producto</a>
+                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 5px;">
+                        <form action="{% url 'cargar_productos_csv' %}" method="post" enctype="multipart/form-data" style="display: flex; align-items: center; gap: 10px; background: white; padding: 6px 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                            {% csrf_token %}
+                            <input type="file" name="csv_file" accept=".csv" required style="font-size: 0.85rem; max-width: 220px;">
+                            <button type="submit" class="btn btn-secondary btn-sm" style="padding: 6px 12px;">Cargar CSV</button>
+                        </form>
+                        <a href="{% url 'crear_producto' %}" class="btn btn-primary">Añadir Nuevo Producto</a>
+                    </div>
+                    <small class="text-muted" style="font-size: 0.75rem;">
+                        <strong>Formato CSV requerido:</strong> Nombre, Descripción, Precio, Stock, Stock Minimo, Unidad (Paquete/Unidad), Categoria
+                    </small>
+                </div>
             </div>
 
             <div class="table-responsive">

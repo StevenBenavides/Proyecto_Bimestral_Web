@@ -17,6 +17,7 @@ urlpatterns = [
     path('dashboard/proveedor/productos/', views.mis_productos, name='mis_productos'),
     path('dashboard/proveedor/productos/editar/<int:id>/', views.editar_producto, name='editar_producto'),
     path('dashboard/proveedor/productos/eliminar/<int:id>/', views.eliminar_producto, name='eliminar_producto'),
+    path('dashboard/proveedor/productos/cargar-csv/', views.cargar_productos_csv, name='cargar_productos_csv'),
     path('dashboard/proveedor/vendedores/', views.mis_vendedores, name='mis_vendedores'),
     path('dashboard/proveedor/vendedores/aprobar/<int:id>/', views.aprobar_solicitud, name='aprobar_solicitud'),
     path('dashboard/proveedor/vendedores/rechazar/<int:id>/', views.rechazar_solicitud, name='rechazar_solicitud'),
