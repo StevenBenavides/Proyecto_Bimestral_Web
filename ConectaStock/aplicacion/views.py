@@ -28,6 +28,7 @@ def crear_proveedor(request):
             formulario.save()
             return redirect('login')
     else:
+        # si no tiene un usuario asociado se crea un formulario vacío
         formulario = ProveedorForm()
     return render(request, 'crear_proveedor.html', {'formulario': formulario})
 
@@ -38,6 +39,7 @@ def crear_vendedor(request):
             formulario.save()
             return redirect('login')
     else:
+        # si no tiene un usuario asociado se crea un formulario vacío
         formulario = VendedorForm()
     return render(request, 'crear_vendedor.html', {'formulario': formulario})
 
@@ -48,6 +50,7 @@ def crear_tienda(request):
             formulario.save()
             return redirect('login')
     else:
+        # si no tiene un usuario asociado se crea un formulario vacío
         formulario = TiendaForm()
     return render(request, 'crear_tienda.html', {'formulario': formulario})
 
@@ -262,6 +265,7 @@ def aprobar_solicitud(request, id):
 
 @login_required
 @require_POST
+# se puso el require_POST para que solo se pueda rechazar mediante una carga 
 def rechazar_solicitud(request, id):
     if not hasattr(request.user, 'perfil_proveedor'):
         return redirect('index')
@@ -276,6 +280,7 @@ def rechazar_solicitud(request, id):
 @login_required
 @require_POST
 def toggle_recepcion_solicitudes(request):
+    # Vista para que el proveedor pueda activar o desactivar la recepción de solicitudes de vendedores
     if not hasattr(request.user, 'perfil_proveedor'):
         return redirect('index')
         
@@ -287,6 +292,7 @@ def toggle_recepcion_solicitudes(request):
 
 @login_required
 def editar_comision(request, id):
+    # Vista para que el proveedor pueda editar la comisión asignada a un vendedor
     if not hasattr(request.user, 'perfil_proveedor'):
         return redirect('index')
         
@@ -349,6 +355,11 @@ def gestionar_pedido(request, id):
 
 
 
+
+
+
+
+
 # ==============================================================================
 # VISTAS DEL VENDEDOR
 # ==============================================================================
@@ -400,6 +411,7 @@ def dashboard_vendedor(request):
 
 @login_required
 def explorar_proveedores(request):
+    # el hasattr se usa para verificar si el usuario tiene un perfil de vendedor asociado
     if not hasattr(request.user, 'perfil_vendedor'):
         return redirect('index')
     
@@ -438,6 +450,7 @@ def enviar_solicitud(request, proveedor_id):
 
 @login_required
 def mis_proveedores_asociados(request):
+    # Vista para que un vendedor vea sus proveedores aprobados
     if not hasattr(request.user, 'perfil_vendedor'):
         return redirect('index')
         
@@ -547,6 +560,10 @@ def notificaciones_vendedor(request):
     notificaciones = vendedor.notificaciones_visita.order_by('-fecha_solicitud')
     
     return render(request, 'notificaciones_vendedor.html', {'notificaciones': notificaciones, 'vendedor': vendedor})
+
+
+
+
 
 
 # ==============================================================================
