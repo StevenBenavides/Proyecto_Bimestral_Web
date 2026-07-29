@@ -32,6 +32,12 @@ class ProveedorForm(ModelForm):
             raise forms.ValidationError("El RUC debe tener 13 dígitos")
         return valor
 
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Este nombre de usuario ya está ocupado, por favor elige otro.")
+        return username
+
     def save(self, commit=True):
         # Obtenemos la instancia sin guardarla todavía
         proveedor = super().save(commit=False)
@@ -70,6 +76,12 @@ class VendedorForm(ModelForm):
         if len(valor) != 10:
             raise forms.ValidationError("Ingrese cédula con 10 dígitos")
         return valor
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Este nombre de usuario ya está ocupado, por favor elige otro.")
+        return username
         
     def save(self, commit=True):
         vendedor = super().save(commit=False)
@@ -112,6 +124,12 @@ class TiendaForm(ModelForm):
         if len(valor) != 10:
             raise forms.ValidationError("Ingrese cédula con 10 dígitos")
         return valor
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Este nombre de usuario ya está ocupado, por favor elige otro.")
+        return username
 
     def save(self, commit=True):
         tienda = super().save(commit=False)
