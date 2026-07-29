@@ -323,6 +323,7 @@ def dashboard_vendedor(request):
 
 @login_required
 def explorar_proveedores(request):
+    # el hasattr se usa para verificar si el usuario tiene un perfil de vendedor asociado
     if not hasattr(request.user, 'perfil_vendedor'):
         return redirect('index')
     
@@ -361,6 +362,7 @@ def enviar_solicitud(request, proveedor_id):
 
 @login_required
 def mis_proveedores_asociados(request):
+    # Vista para que un vendedor vea sus proveedores aprobados
     if not hasattr(request.user, 'perfil_vendedor'):
         return redirect('index')
         
