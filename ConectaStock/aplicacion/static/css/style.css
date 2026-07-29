@@ -1130,6 +1130,59 @@ a:hover {
 .profile-form-input:focus { border-color: var(--primary-color); outline: none; }
 .profile-btn-mt { margin-top: 20px; }
 
+/* Floating Checkout Bar (Mobile) */
+.floating-checkout {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(29, 29, 31, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 15px 20px;
+    padding-bottom: env(safe-area-inset-bottom, 15px);
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.15);
+    z-index: 999;
+    transform: translateY(150%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+.floating-checkout.visible {
+    transform: translateY(0);
+}
+.floating-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+.floating-total-box {
+    display: flex;
+    flex-direction: column;
+}
+.btn-floating-action {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(251, 67, 24, 0.3);
+    transition: transform 0.2s, background 0.2s;
+}
+.btn-floating-action:active {
+    transform: scale(0.96);
+}
+
+@media (min-width: 769px) {
+    .floating-checkout {
+        display: none !important;
+    }
+}
+
 /* ==========================================================================
    Responsive Design (Dispositivos Móviles y Tablets)
    ========================================================================== */

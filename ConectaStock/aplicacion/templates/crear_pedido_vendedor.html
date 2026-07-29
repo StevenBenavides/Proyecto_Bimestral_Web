@@ -96,7 +96,7 @@
                 </div>
 
                 <!-- Facturación (Bottom) -->
-                <div class="billing-card">
+                <div class="billing-card" id="billing-section">
                     <div class="billing-header">
                         <h3 class="billing-title">Paso 2: Detalles de Facturación</h3>
                         <div class="total-container">
@@ -144,6 +144,19 @@
         </div>
     </main>
 
+    <!-- Floating Checkout Bar para móviles -->
+    <div id="floating-checkout-bar" class="floating-checkout">
+        <div class="floating-content">
+            <div class="floating-total-box">
+                <span style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">Total Estimado</span>
+                <span id="floating-total" style="font-size: 1.4rem; font-weight: bold; color: white;">$0.00</span>
+            </div>
+            <button type="button" id="btn-scroll-checkout" class="btn-floating-action">Ir al Pago</button>
+        </div>
+    </div>
+
+
+
     <!-- Script para mostrar/ocultar Número de Transferencia y Calcular Total -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -170,6 +183,16 @@
             // Logica para calcular total dinámico
             const inputsCantidad = document.querySelectorAll('.producto-cantidad');
             const lblTotal = document.getElementById('total-a-pagar');
+            
+            const floatingBar = document.getElementById('floating-checkout-bar');
+            const floatingTotal = document.getElementById('floating-total');
+            const btnScroll = document.getElementById('btn-scroll-checkout');
+
+            if (btnScroll) {
+                btnScroll.addEventListener('click', () => {
+                    document.getElementById('billing-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            }
 
             function calcularTotal() {
                 let total = 0;
@@ -182,7 +205,18 @@
                         total += (cantidad * precio);
                     }
                 });
-                lblTotal.textContent = '$' + total.toFixed(2);
+                const totalFormateado = '$' + total.toFixed(2);
+                lblTotal.textContent = totalFormateado;
+                
+                // Actualizar barra flotante y mostrarla si el total > 0
+                if (floatingTotal) {
+                    floatingTotal.textContent = totalFormateado;
+                    if (total > 0) {
+                        floatingBar.classList.add('visible');
+                    } else {
+                        floatingBar.classList.remove('visible');
+                    }
+                }
             }
 
             inputsCantidad.forEach(input => {
