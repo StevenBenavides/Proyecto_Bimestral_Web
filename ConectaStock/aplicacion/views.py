@@ -110,7 +110,12 @@ def mis_productos(request):
     
     proveedor = request.user.perfil_proveedor
     productos = proveedor.productos.all()
-    return render(request, 'mis_productos.html', {'productos': productos, 'proveedor': proveedor})
+    
+    busqueda = request.GET.get('q', '')
+    if busqueda:
+        productos = productos.filter(nombre__icontains=busqueda)
+        
+    return render(request, 'mis_productos.html', {'productos': productos, 'proveedor': proveedor, 'busqueda': busqueda})
 
 
 @login_required

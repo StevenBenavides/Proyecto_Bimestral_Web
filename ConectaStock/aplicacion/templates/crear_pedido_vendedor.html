@@ -62,7 +62,7 @@
                 {% csrf_token %}
 
                 <!-- Catálogo tipo Cuadrícula (Alibaba / Apple Store) -->
-                <div class="grid-auto-fill">
+                <div class="grid-auto-fill" id="products-container">
                     {% for producto in productos %}
                     <div class="product-card-vendedor">
                         
@@ -75,7 +75,17 @@
                         </div>
                         
                         <p class="product-sku">{{ producto.sku }}</p>
-                        <h4 class="product-name-ellipsed">{{ producto.nombre }}</h4>
+                        <h4 class="product-name-ellipsed" title="{{ producto.nombre }}">{{ producto.nombre }}</h4>
+                        {% if producto.descripcion %}
+                        <details style="margin-bottom: 12px;">
+                            <summary style="cursor: pointer; font-size: 0.95rem; color: #084a96; font-weight: 600; padding: 8px 0; outline: none; display: inline-block;">
+                                Ver descripción
+                            </summary>
+                            <p style="font-size: 1rem; color: #0f172a; margin-top: 4px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; line-height: 1.5;">
+                                {{ producto.descripcion }}
+                            </p>
+                        </details>
+                        {% endif %}
                         <p class="product-price-large">${{ producto.precio_unitario }}</p>
                         
                         <p style="font-size: 0.85rem; margin-bottom: 20px;">
@@ -94,6 +104,9 @@
                     </div>
                     {% endfor %}
                 </div>
+
+                <!-- Controles de Paginación (JS) -->
+                <div id="pagination-controls" style="display: flex; justify-content: center; gap: 15px; margin-bottom: 50px; flex-wrap: wrap;"></div>
 
                 <!-- Facturación (Bottom) -->
                 <div class="billing-card" id="billing-section">
@@ -157,9 +170,86 @@
 
 
 
-    <!-- Script para mostrar/ocultar Número de Transferencia y Calcular Total -->
+    <!-- Script para Paginación, Transferencia y Total -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Lógica de Paginación Frontend (15 productos por página)
+            const itemsPerPage = 15;
+            const productCards = document.querySelectorAll('.product-card-vendedor');
+            const paginationContainer = document.getElementById('pagination-controls');
+            let currentPage = 1;
+            const totalPages = Math.ceil(productCards.length / itemsPerPage);
+
+            function displayPage(page) {
+                currentPage = page;
+                const start = (page - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+
+                productCards.forEach((card, index) => {
+                    if (index >= start && index < end) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                renderPaginationControls();
+                
+                // Si hace clic en siguiente/anterior, scrollear arriba suavemente (solo si ya bajó un poco)
+                const headerOffset = 150;
+                if (window.scrollY > headerOffset && page !== 1) {
+                    document.getElementById('products-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+
+            function renderPaginationControls() {
+                if (totalPages <= 1) {
+                    paginationContainer.style.display = 'none';
+                    return;
+                }
+                
+                paginationContainer.innerHTML = '';
+                
+                // Boton anterior
+                const btnPrev = document.createElement('button');
+                btnPrev.type = 'button';
+                btnPrev.className = 'btn-floating-action';
+                btnPrev.style.background = '#1d1d1f';
+                btnPrev.style.fontSize = '0.9rem';
+                btnPrev.textContent = '« Anterior';
+                btnPrev.disabled = currentPage === 1;
+                if(btnPrev.disabled) btnPrev.style.opacity = '0.5';
+                btnPrev.addEventListener('click', () => displayPage(currentPage - 1));
+                paginationContainer.appendChild(btnPrev);
+
+                // Info de pagina
+                const spanInfo = document.createElement('span');
+                spanInfo.style.alignSelf = 'center';
+                spanInfo.style.fontWeight = '600';
+                spanInfo.style.fontSize = '1.1rem';
+                spanInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+                paginationContainer.appendChild(spanInfo);
+
+                // Boton siguiente
+                const btnNext = document.createElement('button');
+                btnNext.type = 'button';
+                btnNext.className = 'btn-floating-action';
+                btnNext.style.background = '#1d1d1f';
+                btnNext.style.fontSize = '0.9rem';
+                btnNext.textContent = 'Siguiente »';
+                btnNext.disabled = currentPage === totalPages;
+                if(btnNext.disabled) btnNext.style.opacity = '0.5';
+                btnNext.addEventListener('click', () => displayPage(currentPage + 1));
+                paginationContainer.appendChild(btnNext);
+            }
+
+            // Inicializar paginación
+            if(productCards.length > 0) {
+                displayPage(1);
+            }
+
+
+            // Mostrar/Ocultar Transferencia
             const metodoPagoSelect = document.getElementById('{{ formulario.metodo_pago.id_for_label }}');
             const grupoTransferencia = document.getElementById('grupo-transferencia');
             const inputTransferencia = document.getElementById('{{ formulario.numero_transferencia.id_for_label }}');
