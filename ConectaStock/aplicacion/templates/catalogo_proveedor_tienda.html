@@ -77,7 +77,7 @@
                     </thead>
                     <tbody>
                         {% for producto in productos %}
-                        <tr>
+                        <tr class="product-row">
                             <td class="td-img">
                                 {% if producto.imagen %}
                                 <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="img-avatar">
@@ -116,6 +116,9 @@
                     </tbody>
                 </table>
             </div>
+            
+            <!-- Controles de Paginación (JS) -->
+            <div id="pagination-controls" style="display: flex; justify-content: center; gap: 15px; margin-top: 30px; margin-bottom: 50px; flex-wrap: wrap;"></div>
 
             <div style="position: fixed; bottom: 30px; right: 30px; z-index: 1000;">
                 <form action="{% url 'solicitar_visita_vendedor' proveedor.id %}" method="post">
@@ -135,5 +138,79 @@
         </div>
     </footer>
 
+    <!-- Script para Paginación de Tabla -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const itemsPerPage = 15;
+            const productRows = document.querySelectorAll('.product-row');
+            const paginationContainer = document.getElementById('pagination-controls');
+            let currentPage = 1;
+            const totalPages = Math.ceil(productRows.length / itemsPerPage);
+
+            function displayPage(page) {
+                currentPage = page;
+                const start = (page - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+
+                productRows.forEach((row, index) => {
+                    if (index >= start && index < end) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                renderPaginationControls();
+                
+                if (window.scrollY > 200 && page !== 1) {
+                    window.scrollTo({ top: 100, behavior: 'smooth' });
+                }
+            }
+
+            function renderPaginationControls() {
+                if (totalPages <= 1) {
+                    paginationContainer.style.display = 'none';
+                    return;
+                }
+                
+                paginationContainer.innerHTML = '';
+                
+                const btnPrev = document.createElement('button');
+                btnPrev.type = 'button';
+                btnPrev.className = 'btn-floating-action';
+                btnPrev.style.background = '#1d1d1f';
+                btnPrev.style.fontSize = '0.9rem';
+                btnPrev.style.padding = '8px 20px';
+                btnPrev.textContent = '« Anterior';
+                btnPrev.disabled = currentPage === 1;
+                if(btnPrev.disabled) btnPrev.style.opacity = '0.5';
+                btnPrev.addEventListener('click', () => displayPage(currentPage - 1));
+                paginationContainer.appendChild(btnPrev);
+
+                const spanInfo = document.createElement('span');
+                spanInfo.style.alignSelf = 'center';
+                spanInfo.style.fontWeight = '600';
+                spanInfo.style.fontSize = '1rem';
+                spanInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+                paginationContainer.appendChild(spanInfo);
+
+                const btnNext = document.createElement('button');
+                btnNext.type = 'button';
+                btnNext.className = 'btn-floating-action';
+                btnNext.style.background = '#1d1d1f';
+                btnNext.style.fontSize = '0.9rem';
+                btnNext.style.padding = '8px 20px';
+                btnNext.textContent = 'Siguiente »';
+                btnNext.disabled = currentPage === totalPages;
+                if(btnNext.disabled) btnNext.style.opacity = '0.5';
+                btnNext.addEventListener('click', () => displayPage(currentPage + 1));
+                paginationContainer.appendChild(btnNext);
+            }
+
+            if(productRows.length > 0) {
+                displayPage(1);
+            }
+        });
+    </script>
 </body>
 </html>
