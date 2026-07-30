@@ -84,11 +84,16 @@ def dashboard_proveedor(request):
             'total_pedidos': pedidos_vendedor.count(),
             'pedidos_entregados': pedidos_entregados.count(),
             'total_ventas': total_ventas_vendedor,
-            'id_solicitud': solicitud.id
+            'id_solicitud': solicitud.id,
+            'deuda_actual': solicitud.get_deuda_actual(),
+            'pago_pendiente': float(solicitud.pago_pendiente)
         })
     
     # Ordenar por ventas generadas (descendente)
     kpis_vendedores.sort(key=lambda x: x['total_ventas'], reverse=True)
+
+    # Calcular comisiones pendientes globales (suma de deudas actuales)
+    total_comisiones_pendientes = sum([kpi['deuda_actual'] for kpi in kpis_vendedores])
 
     context = {
         'proveedor': proveedor,
@@ -97,7 +102,7 @@ def dashboard_proveedor(request):
         'num_vendedores': vendedores_activos.count(),
         'num_solicitudes': proveedor.solicitudes_vendedores.filter(estado='Pendiente').count(),
         'total_ventas': proveedor.get_total_ventas(),
-        'total_comisiones': proveedor.get_total_comisiones(),
+        'total_comisiones': total_comisiones_pendientes,
         'kpis_vendedores': kpis_vendedores,
     }
     return render(request, 'dashboard_proveedor.html', context)
@@ -407,6 +412,7 @@ def dashboard_vendedor(request):
         'num_notificaciones': num_notificaciones,
         'comisiones_pendientes': comisiones_pendientes,
         'ganancias_totales': vendedor.get_total_ganancias(),
+        'total_pagado': vendedor.get_total_pagado(),
         'postulaciones': postulaciones,
         'proveedores_aprobados': proveedores_aprobados,
         'formulario': formulario,
@@ -686,3 +692,40 @@ def detalle_pedido_tienda(request, pedido_id):
     detalles = pedido.detalles.all()
     
     return render(request, 'detalle_pedido_tienda.html', {'pedido': pedido, 'detalles': detalles, 'tienda': tienda})
+
+
+@login_required
+@require_POST
+def registrar_pago_comision(request, id):
+    if not hasattr(request.user, 'perfil_proveedor'):
+        return redirect('index')
+    
+    solicitud = get_object_or_404(SolicitudVendedor, id=id, proveedor=request.user.perfil_proveedor)
+    deuda = solicitud.get_deuda_actual()
+    
+    if deuda > 0:
+        solicitud.pago_pendiente = float(solicitud.pago_pendiente) + deuda
+        solicitud.save()
+        messages.success(request, f"Se ha registrado un pago de ${deuda} a {solicitud.vendedor.nombre}. Esperando confirmación del vendedor.")
+    else:
+        messages.warning(request, "No hay deuda pendiente con este vendedor.")
+        
+    return redirect('dashboard_proveedor')
+@login_required
+@require_POST
+def confirmar_pago_comision(request, id):
+    if not hasattr(request.user, 'perfil_vendedor'):
+        return redirect('index')
+        
+    solicitud = get_object_or_404(SolicitudVendedor, id=id, vendedor=request.user.perfil_vendedor)
+    
+    if solicitud.pago_pendiente > 0:
+        monto = solicitud.pago_pendiente
+        solicitud.total_pagado += monto
+        solicitud.pago_pendiente = 0
+        solicitud.save()
+        messages.success(request, f"Has confirmado la recepción de ${monto} del proveedor {solicitud.proveedor.nombre_empresa}.")
+    else:
+        messages.warning(request, "No tienes pagos pendientes por confirmar de este proveedor.")
+        
+    return redirect('dashboard_vendedor')

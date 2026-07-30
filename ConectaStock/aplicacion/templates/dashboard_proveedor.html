@@ -131,6 +131,7 @@
                             <th>Entregas Exitosas</th>
                             <th>Ingresos Generados</th>
                             <th>Comisión</th>
+                            <th>Deuda Actual</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -143,6 +144,23 @@
                             <td class="font-mono text-success font-weight-bold">${{ kpi.total_ventas|floatformat:2 }}</td>
                             <td>{{ kpi.comision_actual }}%</td>
                             <td>
+                                <div>
+                                    <strong class="text-danger" style="font-size: 1.1rem;">${{ kpi.deuda_actual|floatformat:2 }}</strong>
+                                    <br><small class="text-muted">Por Pagar</small>
+                                </div>
+                                {% if kpi.pago_pendiente > 0 %}
+                                    <div style="margin-top: 5px;">
+                                        <span class="badge badge-warning" style="font-size: 0.75rem;">${{ kpi.pago_pendiente|floatformat:2 }} en validación</span>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if kpi.deuda_actual > 0 and kpi.pago_pendiente == 0 %}
+                                <form action="{% url 'registrar_pago_comision' kpi.id_solicitud %}" method="post" style="display:inline; margin-right: 5px;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('¿Registrar pago de ${{ kpi.deuda_actual|floatformat:2 }} a este vendedor?');">Pagar</button>
+                                </form>
+                                {% endif %}
                                 <a href="{% url 'editar_comision' kpi.id_solicitud %}" class="btn btn-secondary btn-sm" style="margin-right: 5px;">Ajustar</a>
                                 <form action="{% url 'eliminar_vendedor' kpi.id_solicitud %}" method="post" style="display:inline;">
                                     {% csrf_token %}

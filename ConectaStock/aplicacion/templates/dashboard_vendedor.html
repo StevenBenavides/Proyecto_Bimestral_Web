@@ -44,9 +44,15 @@
                     <h1 class="title-2-2rem">Hola, {{ vendedor.nombre }}</h1>
                     <p class="desc-gray-m0">Aquí está el resumen de tu rendimiento.</p>
                 </div>
-                <div class="stats-total-box">
-                    <p class="stats-total-label">Ganancias Totales</p>
-                    <p class="stats-total-amount">${{ ganancias_totales|floatformat:2 }}</p>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: flex-end;">
+                    <div class="stats-total-box" style="background: white; border: 1px solid #e0e0e0;">
+                        <p class="stats-total-label">Total Recibido (Pagado)</p>
+                        <p class="stats-total-amount" style="color: #10b981;">${{ total_pagado|floatformat:2 }}</p>
+                    </div>
+                    <div class="stats-total-box">
+                        <p class="stats-total-label">Histórico Generado</p>
+                        <p class="stats-total-amount">${{ ganancias_totales|floatformat:2 }}</p>
+                    </div>
                 </div>
             </div>
 
@@ -116,6 +122,8 @@
                             <th class="table-th">Proveedor</th>
                             <th class="table-th">Estado</th>
                             <th class="table-th">Comisión Asignada</th>
+                            <th class="table-th">Por Cobrar</th>
+                            <th class="table-th">Acciones de Pago</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -138,10 +146,27 @@
                                 <span class="desc-gray-m0">N/A</span>
                                 {% endif %}
                             </td>
+                            <td class="table-td-bold">
+                                {% if postulacion.estado == 'Aprobado' %}
+                                <span class="text-danger">${{ postulacion.get_deuda_actual|floatformat:2 }}</span>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td class="table-td">
+                                {% if postulacion.pago_pendiente > 0 %}
+                                <form action="{% url 'confirmar_pago_comision' postulacion.id %}" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary btn-sm" style="font-size: 0.8rem; padding: 5px 10px;" onclick="return confirm('¿Confirmar que has recibido el pago por ${{ postulacion.pago_pendiente|floatformat:2 }}?');">Confirmar Pago (${{ postulacion.pago_pendiente|floatformat:2 }})</button>
+                                </form>
+                                {% elif postulacion.estado == 'Aprobado' %}
+                                <span class="desc-gray-m0" style="font-size: 0.8rem;">Sin pagos por confirmar</span>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="3" class="table-td text-center desc-gray-m0" style="padding: 40px;">No has enviado postulaciones todavía.</td>
+                            <td colspan="5" class="table-td text-center desc-gray-m0" style="padding: 40px;">No has enviado postulaciones todavía.</td>
                         </tr>
                         {% endfor %}
                     </tbody>

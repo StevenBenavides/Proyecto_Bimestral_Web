@@ -24,6 +24,7 @@ urlpatterns = [
     path('dashboard/proveedor/vendedores/editar-comision/<int:id>/', views.editar_comision, name='editar_comision'),
     path('dashboard/proveedor/vendedores/eliminar/<int:id>/', views.eliminar_vendedor, name='eliminar_vendedor'),
     path('dashboard/proveedor/vendedores/toggle-recepcion/', views.toggle_recepcion_solicitudes, name='toggle_recepcion_solicitudes'),
+    path('dashboard/proveedor/vendedores/pagar/<int:id>/', views.registrar_pago_comision, name='registrar_pago_comision'),
     path('dashboard/proveedor/pedidos/', views.mis_pedidos, name='mis_pedidos'),
     path('dashboard/proveedor/pedidos/gestionar/<int:id>/', views.gestionar_pedido, name='gestionar_pedido'),
     
@@ -32,6 +33,7 @@ urlpatterns = [
     path('dashboard/vendedor/proveedores/explorar/', views.explorar_proveedores, name='explorar_proveedores'),
     path('dashboard/vendedor/proveedores/solicitar/<int:proveedor_id>/', views.enviar_solicitud, name='enviar_solicitud'),
     path('dashboard/vendedor/proveedores/mis-redes/', views.mis_proveedores_asociados, name='mis_proveedores_asociados'),
+    path('dashboard/vendedor/proveedores/confirmar-pago/<int:id>/', views.confirmar_pago_comision, name='confirmar_pago_comision'),
     path('dashboard/vendedor/pedidos/nuevo/<int:proveedor_id>/', views.crear_pedido_vendedor, name='crear_pedido_vendedor'),
     path('dashboard/vendedor/pedidos/historial/', views.historial_pedidos_vendedor, name='historial_pedidos_vendedor'),
     path('dashboard/vendedor/notificaciones/', views.notificaciones_vendedor, name='notificaciones_vendedor'),

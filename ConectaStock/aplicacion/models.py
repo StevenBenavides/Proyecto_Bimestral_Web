@@ -75,6 +75,9 @@ class Vendedor(models.Model):
                 total += (pedido.calcular_total() * (solicitud.comision / 100))
         return total
 
+    def get_total_pagado(self):
+        return sum([float(solicitud.total_pagado) for solicitud in self.solicitudes.all()])
+
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
 
@@ -89,6 +92,8 @@ class SolicitudVendedor(models.Model):
     descripcion_ganas = models.TextField()
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='Pendiente')
     comision = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True) # Porcentaje
+    total_pagado = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    pago_pendiente = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
     def aprobar_solicitud(self, comision_asignada):
         # Logica para aprobar la solicitud y asignar una comisión
@@ -98,6 +103,15 @@ class SolicitudVendedor(models.Model):
         self.estado = 'Aprobado'
         self.save()
         return True, "Solicitud aprobada exitosamente."
+
+    def get_total_generado(self):
+        pedidos = self.vendedor.pedido_set.filter(proveedor=self.proveedor, estado='Entregado')
+        total_ganado = sum([p.calcular_total() * (self.comision / 100) for p in pedidos]) if self.comision else 0
+        return round(float(total_ganado), 2)
+
+    def get_deuda_actual(self):
+        deuda = self.get_total_generado() - float(self.total_pagado) - float(self.pago_pendiente)
+        return max(0, round(deuda, 2))
 
     def __str__(self):
         return f"Solicitud de {self.vendedor} a {self.proveedor}"
